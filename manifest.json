@@ -1,11 +1,11 @@
 {
-	"id": "obsidian-sample-plugin",
-	"name": "Sample Plugin",
+	"id": "obsidian-msg-handler",
+	"name": "Obsidian MSG Handler",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "This is a sample plugin for Obsidian. This plugin demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "This plugin is created to handle msg files from Outlook",
+	"author": "Ozan Tellioglu",
+	"authorUrl": "https://www.ozan.pl",
+	"fundingUrl": "https://ko-fi.com/ozante",
 	"isDesktopOnly": false
 }
