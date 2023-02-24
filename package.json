@@ -12,6 +12,7 @@
 	"author": "",
 	"license": "MIT",
 	"devDependencies": {
+		"@types/common-tags": "^1.8.1",
 		"@types/node": "^16.11.6",
 		"@typescript-eslint/eslint-plugin": "5.29.0",
 		"@typescript-eslint/parser": "5.29.0",
@@ -23,6 +24,7 @@
 	},
 	"dependencies": {
 		"@kenjiuno/msgreader": "^1.19.0-alpha.1",
+		"common-tags": "^1.8.2",
 		"dexie": "^3.2.3"
 	}
 }
