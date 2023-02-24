@@ -3,6 +3,8 @@ import MsgHandlerPlugin from 'main';
 import { renderMarkdown, convertMessageContentToMarkdown, getMsgContent } from 'utils';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import SearchViewComponent from 'components/search';
+import { RecoilRoot } from 'recoil';
 
 /* ------------ RENDERER VIEW FOR FILE PREVIEW ------------ */
 
@@ -78,7 +80,9 @@ export class MsgHandlerSearchView extends ItemView {
 		this.destroy();
 		ReactDOM.render(
 			<div className="msg-handler-plugin">
-				<h1>MSG Search</h1>
+				<RecoilRoot>
+					<SearchViewComponent plugin={this.plugin} />
+				</RecoilRoot>
 			</div>,
 			this.contentEl
 		);

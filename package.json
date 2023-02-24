@@ -28,9 +28,11 @@
 		"@kenjiuno/msgreader": "^1.19.0-alpha.1",
 		"common-tags": "^1.8.2",
 		"dexie": "^3.2.3",
+		"fuzzysort": "^2.0.4",
 		"preact": "^10",
 		"prettier": "^2.8.4",
 		"react": "npm:@preact/compat@17.0.2",
-		"react-dom": "npm:@preact/compat@17.0.2"
+		"react-dom": "npm:@preact/compat@17.0.2",
+		"recoil": "^0.7.6"
 	}
 }
