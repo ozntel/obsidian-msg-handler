@@ -3,6 +3,7 @@ import { TFile } from 'obsidian';
 import MsgHandlerPlugin from 'main';
 import { DBCustomMessage, CustomMessageContent } from 'types';
 import { getMsgContent } from 'utils';
+import fuzzysort from 'fuzzysort';
 
 export class MsgHandlerDatabase extends Dexie {
 	dbMessageContents!: Dexie.Table<DBCustomMessage, number>;
@@ -89,4 +90,13 @@ export const syncDatabaseWithVaultFiles = async (params: { plugin: MsgHandlerPlu
 			});
 		}
 	}
+};
+
+export const searchMsgFilesWithKey = async (params: { key: string }) => {
+	let allDBMessageContents = await getAllDBMessageContents();
+	const results = fuzzysort.go(params.key, allDBMessageContents, {
+		keys: ['subject', 'body'],
+		threshold: -500000,
+	});
+	return results;
 };
