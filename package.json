@@ -25,6 +25,7 @@
 	"dependencies": {
 		"@kenjiuno/msgreader": "^1.19.0-alpha.1",
 		"common-tags": "^1.8.2",
-		"dexie": "^3.2.3"
+		"dexie": "^3.2.3",
+		"prettier": "^2.8.4"
 	}
 }

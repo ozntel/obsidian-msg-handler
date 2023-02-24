@@ -1,14 +1,10 @@
-import { FileView, TFile, WorkspaceLeaf } from "obsidian";
-import MsgHandlerPlugin from "src/main";
-import {
-	renderMarkdown,
-	convertMessageContentToMarkdown,
-	getMsgContent,
-} from "src/utils";
+import { FileView, TFile, WorkspaceLeaf } from 'obsidian';
+import MsgHandlerPlugin from 'src/main';
+import { renderMarkdown, convertMessageContentToMarkdown, getMsgContent } from 'src/utils';
 
-export const VIEW_TYPE = "msg-handler-view";
-export const VIEW_DISPLAY_TEXT = "MSG Handler";
-export const ICON = "sheets-in-box";
+export const VIEW_TYPE = 'msg-handler-view';
+export const VIEW_DISPLAY_TEXT = 'MSG Handler';
+export const ICON = 'sheets-in-box';
 
 export class MsgHandlerView extends FileView {
 	plugin: MsgHandlerPlugin;
@@ -28,9 +24,6 @@ export class MsgHandlerView extends FileView {
 			msgPath: file.path,
 		});
 
-		await renderMarkdown(
-			convertMessageContentToMarkdown(msgContent),
-			this.contentEl
-		);
+		await renderMarkdown(convertMessageContentToMarkdown(msgContent), this.contentEl);
 	}
 }
