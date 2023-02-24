@@ -1,8 +1,9 @@
 import MsgReader, { FieldsData } from '@kenjiuno/msgreader';
-import MsgHandlerPlugin from 'src/main';
-import { normalizePath, MarkdownRenderer, Component } from 'obsidian';
-import { CustomMessageContent, CustomRecipient } from 'src/types';
+import MsgHandlerPlugin from 'main';
+import { normalizePath, MarkdownRenderer, Component, TFile } from 'obsidian';
+import { CustomMessageContent, CustomRecipient } from 'types';
 import { stripIndents } from 'common-tags';
+import { getDBMessageContentsByPath, createDBMessageContent, deleteDBMessageContentById } from 'database';
 
 export const getMsgContent = async (params: { plugin: MsgHandlerPlugin; msgPath: string }): Promise<CustomMessageContent> => {
 	let msgFileBuffer = await params.plugin.app.vault.adapter.readBinary(normalizePath(params.msgPath));
@@ -67,4 +68,53 @@ export const convertMessageContentToMarkdown = (msgContent: CustomMessageContent
             ${msgContent.body}
         </div>
     `);
+};
+
+/* ------------- EVENT HANDLERS FOR VAULT FILE CHANGES ------------ */
+
+/**
+ * This function is created to handle "create" event for vault
+ * @param file
+ */
+export const handleFileCreate = async (file: TFile) => {
+	if (file.path.endsWith('msg')) {
+		let dbMsgContents = await getDBMessageContentsByPath({ filePath: file.path });
+		if (dbMsgContents.length === 0) {
+			let msgContent = await getMsgContent({ plugin: this, msgPath: file.path });
+			createDBMessageContent({
+				msgContent: msgContent,
+				file: file as TFile,
+			});
+			console.log(`DB Record is created for ${file.path}`);
+		}
+	}
+};
+
+/**
+ * This function is created to handle "delete" event for vault
+ * @param file
+ */
+export const handleFileDelete = async (file: TFile) => {
+	if (file.path.endsWith('msg')) {
+		let dbMsgContents = await getDBMessageContentsByPath({ filePath: file.path });
+		if (dbMsgContents.length > 0) {
+			for (let dbMsgContent of dbMsgContents) {
+				await deleteDBMessageContentById({ id: dbMsgContent.id });
+				console.log(`DB Record is deleted for ${file.path}`);
+			}
+		}
+	}
+};
+
+/**
+ * This function is created to handle "rename" event for vault
+ * @param file
+ * @param oldPath
+ */
+export const handleFileRename = async (file: TFile, oldPath: string) => {
+	let dbMsgContents = await getDBMessageContentsByPath({ filePath: oldPath });
+	if (dbMsgContents.length > 0) {
+		// @TODO Update the content with new path
+		console.log(`DB Record is updated for ${file.path}`);
+	}
 };

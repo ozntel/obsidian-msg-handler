@@ -1,8 +1,8 @@
 import Dexie from 'dexie';
 import { TFile } from 'obsidian';
-import MsgHandlerPlugin from 'src/main';
-import { DBCustomMessage, CustomMessageContent } from 'src/types';
-import { getMsgContent } from 'src/utils';
+import MsgHandlerPlugin from 'main';
+import { DBCustomMessage, CustomMessageContent } from 'types';
+import { getMsgContent } from 'utils';
 
 export class MsgHandlerDatabase extends Dexie {
 	dbMessageContents!: Dexie.Table<DBCustomMessage, number>;

@@ -25,3 +25,7 @@
 .workspace-leaf-content[data-type='msg-handler-view'] p {
 	margin: 5px 0px 5px 0px;
 }
+
+.MSG_HANDLER_ENVELOPE_ICON {
+	fill: var(--icon-color) !important;
+}
