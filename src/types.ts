@@ -2,6 +2,7 @@ export interface CustomMessageContent {
 	senderName: string;
 	senderEmail: string;
 	recipients: CustomRecipient[];
+	creationTime: string;
 	subject: string;
 	body: string;
 }

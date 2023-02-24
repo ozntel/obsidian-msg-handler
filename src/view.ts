@@ -26,4 +26,9 @@ export class MsgHandlerView extends FileView {
 
 		await renderMarkdown(convertMessageContentToMarkdown(msgContent), this.contentEl);
 	}
+
+	async onUnloadFile(file: TFile): Promise<void> {
+		this.contentEl.innerHTML = '';
+		super.onUnloadFile(file);
+	}
 }

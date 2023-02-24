@@ -12,6 +12,7 @@ export const getMsgContent = async (params: { plugin: MsgHandlerPlugin; msgPath:
 		senderName: dataOrEmpty(fileData.senderName),
 		senderEmail: dataOrEmpty(fileData.senderSmtpAddress),
 		recipients: getCustomRecipients(fileData.recipients ? fileData.recipients : []),
+		creationTime: dataOrEmpty(fileData.creationTime),
 		subject: dataOrEmpty(fileData.normalizedSubject),
 		body: dataOrEmpty(fileData.body),
 	};
@@ -40,16 +41,30 @@ export const renderMarkdown = async (mdContent: string, destEl: HTMLElement) => 
 	await MarkdownRenderer.renderMarkdown(mdContent, destEl, '', null as unknown as Component);
 };
 
+const createMailToLink = (email: string) => {
+	return stripIndents` 
+    <a aria-label="mailTo:${email} href="mailTo:${email} target="_blank" class="external-link" rel="noopener">
+        ${email}
+    </a>
+`;
+};
+
 export const convertMessageContentToMarkdown = (msgContent: CustomMessageContent) => {
 	let recipientsText = '';
+
 	for (let recipient of msgContent.recipients) {
-		recipientsText += recipient.name + '<' + recipient.email + '>; ';
+		recipientsText += ' ' + recipient.name + createMailToLink(recipient.email) + ';';
 	}
 
 	return stripIndents(`
-        <strong>Sender</strong>: ${msgContent.senderName}<${msgContent.senderEmail}>
-        <strong>Recipients</strong>: ${recipientsText}
-        <strong>Subject</strong>: ${msgContent.subject}
-        ${msgContent.body}
+        <div class="oz-msg-handler-header">
+            <strong>From</strong>: ${msgContent.senderName} ${createMailToLink(msgContent.senderEmail)} <br/>
+            <strong>Sent</strong>: ${msgContent.creationTime} <br/>
+            <strong>Recipients</strong>: ${recipientsText}  <br/>
+            <strong>Subject</strong>: ${msgContent.subject}  <br/>
+        </div> 
+        <div class="oz-msg-handler-body">
+            ${msgContent.body}
+        </div>
     `);
 };

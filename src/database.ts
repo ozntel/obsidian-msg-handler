@@ -45,6 +45,7 @@ export const createDBMessageContent = async (params: { msgContent: CustomMessage
 		senderName: msgContent.senderName,
 		senderEmail: msgContent.senderEmail,
 		recipients: msgContent.recipients,
+		creationTime: msgContent.creationTime,
 		body: msgContent.body,
 		subject: msgContent.subject,
 		filePath: file.path,
