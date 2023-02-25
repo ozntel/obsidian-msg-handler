@@ -2,7 +2,6 @@ import MsgReader, { FieldsData } from '@kenjiuno/msgreader';
 import MsgHandlerPlugin from 'main';
 import { normalizePath, MarkdownRenderer, Component, TFile } from 'obsidian';
 import { CustomMessageContent, CustomRecipient } from 'types';
-import { stripIndents } from 'common-tags';
 
 export const getMsgContent = async (params: {
 	plugin: MsgHandlerPlugin;
@@ -11,6 +10,7 @@ export const getMsgContent = async (params: {
 	let msgFileBuffer = await params.plugin.app.vault.adapter.readBinary(normalizePath(params.msgPath));
 	let msgReader = new MsgReader(msgFileBuffer);
 	let fileData = msgReader.getFileData();
+	console.log(fileData);
 	return {
 		senderName: dataOrEmpty(fileData.senderName),
 		senderEmail: dataOrEmpty(fileData.senderSmtpAddress),
@@ -42,34 +42,6 @@ const dataOrEmpty = (data: any) => {
 
 export const renderMarkdown = async (mdContent: string, destEl: HTMLElement) => {
 	await MarkdownRenderer.renderMarkdown(mdContent, destEl, '', null as unknown as Component);
-};
-
-const createMailToLink = (email: string) => {
-	return stripIndents` 
-    <a aria-label="mailTo:${email} href="mailTo:${email} target="_blank" class="external-link" rel="noopener">
-        ${email}
-    </a>
-`;
-};
-
-export const convertMessageContentToMarkdown = (msgContent: CustomMessageContent) => {
-	let recipientsText = '';
-
-	for (let recipient of msgContent.recipients) {
-		recipientsText += ' ' + recipient.name + createMailToLink(recipient.email) + ';';
-	}
-
-	return stripIndents(`
-        <div class="oz-msg-handler-header">
-            <strong>From</strong>: ${msgContent.senderName} ${createMailToLink(msgContent.senderEmail)} <br/>
-            <strong>Sent</strong>: ${msgContent.creationTime} <br/>
-            <strong>Recipients</strong>: ${recipientsText}  <br/>
-            <strong>Subject</strong>: ${msgContent.subject}  <br/>
-        </div> 
-        <div class="oz-msg-handler-body">
-            ${msgContent.body}
-        </div>
-    `);
 };
 
 export const replaceNewLinesAndCarriages = (txt: string) => {

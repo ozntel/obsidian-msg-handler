@@ -1,9 +1,9 @@
 import { FileView, TFile, WorkspaceLeaf, ItemView } from 'obsidian';
 import MsgHandlerPlugin from 'main';
-import { renderMarkdown, convertMessageContentToMarkdown, getMsgContent } from 'utils';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import SearchViewComponent from 'components/search';
+import RendererViewComponent from 'components/renderer';
 
 /* ------------ RENDERER VIEW FOR FILE PREVIEW ------------ */
 
@@ -21,13 +21,22 @@ export class MsgHandlerView extends FileView {
 		return RENDER_VIEW_TYPE;
 	}
 
-	async onLoadFile(file: TFile): Promise<void> {
-		const msgContent = await getMsgContent({
-			plugin: this.plugin,
-			msgPath: file.path,
-		});
+	destroy() {
+		ReactDOM.unmountComponentAtNode(this.contentEl);
+	}
 
-		await renderMarkdown(convertMessageContentToMarkdown(msgContent), this.contentEl);
+	async onLoadFile(file: TFile): Promise<void> {
+		this.constructMessageRenderView({ fileToRender: file });
+	}
+
+	async constructMessageRenderView(params: { fileToRender: TFile }) {
+		this.destroy();
+		ReactDOM.render(
+			<div className="msg-handler-plugin-renderer">
+				<RendererViewComponent plugin={this.plugin} fileToRender={params.fileToRender} />
+			</div>,
+			this.contentEl
+		);
 	}
 
 	async onUnloadFile(file: TFile): Promise<void> {
@@ -78,7 +87,7 @@ export class MsgHandlerSearchView extends ItemView {
 	constructMsgSearchView() {
 		this.destroy();
 		ReactDOM.render(
-			<div className="msg-handler-plugin">
+			<div className="msg-handler-plugin-search">
 				<SearchViewComponent plugin={this.plugin} />
 			</div>,
 			this.contentEl
