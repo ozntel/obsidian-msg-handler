@@ -47,6 +47,7 @@ const RecipientList = (params: { recipients: CustomRecipient[] }) => {
 				return (
 					<span id={recipient.email}>
 						{recipient.name}
+						{' <'}
 						<a
 							aria-label={'mailTo:' + recipient.email}
 							href={'mailTo:' + recipient.email}
@@ -55,7 +56,7 @@ const RecipientList = (params: { recipients: CustomRecipient[] }) => {
 							rel="noopener">
 							{recipient.email}
 						</a>
-						{'; '}
+						{'>; '}
 					</span>
 				);
 			})}
