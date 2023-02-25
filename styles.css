@@ -73,3 +73,7 @@
 .oz-msg-handler-action-button svg {
 	vertical-align: middle !important;
 }
+
+.workspace-tab-header.is-active[aria-label='MSG Handler Search'] svg {
+	fill: var(--icon-color-focused);
+}
