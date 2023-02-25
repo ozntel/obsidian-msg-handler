@@ -56,7 +56,9 @@ export default class MsgHandlerPlugin extends Plugin {
 			await leaf.setViewState({ type: SEARCH_VIEW_TYPE });
 			if (showAfterAttach) this.app.workspace.revealLeaf(leaf);
 		} else {
-			leafs.forEach((leaf) => this.app.workspace.revealLeaf(leaf));
+			if (showAfterAttach) {
+				leafs.forEach((leaf) => this.app.workspace.revealLeaf(leaf));
+			}
 		}
 	};
 
