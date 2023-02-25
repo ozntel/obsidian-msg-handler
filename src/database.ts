@@ -120,3 +120,25 @@ export const searchMsgFilesWithKey = async (params: { key: string }) => {
 	});
 	return results;
 };
+
+/**
+ * Pass the string coming from fuzzysort, which includes <mark> items to hightlight
+ * matches within the text. It will return appropriate part of the text to show
+ * within the Search results to occupy less place and show relevant part
+ * @param txt
+ * @returns
+ */
+export const getHighlightedPartOfSearchResult = (txt: string) => {
+	const firstStrongIndex = txt.indexOf('<mark class="oz-highlight">');
+	const lastStrongIndex = txt.lastIndexOf('</mark>');
+
+	// Get the start and end indices for the highlighted text
+	const startWordIndex = txt.lastIndexOf(' ', firstStrongIndex - 2) + 1;
+	const endWordIndex = txt.indexOf(' ', lastStrongIndex + 9);
+
+	// Add 5 words before and after the highlighted text
+	const startIndex = Math.max(startWordIndex - 5, 0);
+	const endIndex = Math.min(endWordIndex + 5, txt.length);
+
+	return txt.substring(startIndex, endIndex);
+};

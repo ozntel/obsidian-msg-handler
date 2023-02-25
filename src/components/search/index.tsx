@@ -4,10 +4,9 @@ import MsgHandlerPlugin from 'main';
 import { MdKeyboardArrowDown, MdKeyboardArrowRight } from 'react-icons/md';
 import { CgChevronDoubleUp, CgChevronDoubleDown } from 'react-icons/cg';
 import { MSGDataIndexed } from 'types';
-import { searchMsgFilesWithKey } from 'database';
+import { searchMsgFilesWithKey, getHighlightedPartOfSearchResult } from 'database';
 import {
 	getFileName,
-	getHighlightedPartOfSearchResult,
 	replaceNewLinesAndCarriages,
 	openFile,
 	openFileInNewTab,
