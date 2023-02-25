@@ -29,3 +29,52 @@
 .MSG_HANDLER_ENVELOPE_ICON {
 	fill: var(--icon-color) !important;
 }
+
+.oz-highlight {
+	background-color: yellow;
+	border: 0.5px solid black;
+}
+
+.no-wrap {
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.oz-searchbox-container,
+.oz-searchbox-container input {
+	width: 100%;
+}
+
+.oz-msg-handler-actions-items {
+	text-align: center;
+	padding: 3px 2px 0px 2px;
+	background-color: var(--background-secondary-alt);
+	margin-bottom: 7px;
+	border-radius: 5px;
+}
+
+.oz-msg-handler-header-fixed {
+	position: sticky;
+	top: 0;
+	padding-left: 4px;
+	padding-right: 4px;
+	z-index: 100;
+}
+
+.oz-msg-handler-action-button {
+	color: var(--text-muted);
+	display: inline-block;
+	padding: 0px 0px 0px 2px;
+	margin-left: 5px;
+	opacity: 0.5;
+	border-radius: 8px;
+	opacity: 1;
+}
+
+.oz-msg-handler-action-button:hover {
+	opacity: 0.6;
+}
+
+.oz-msg-handler-action-button svg {
+	vertical-align: middle !important;
+}

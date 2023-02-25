@@ -95,8 +95,21 @@ export const syncDatabaseWithVaultFiles = async (params: { plugin: MsgHandlerPlu
 export const searchMsgFilesWithKey = async (params: { key: string }) => {
 	let allDBMessageContents = await getAllDBMessageContents();
 	const results = fuzzysort.go(params.key, allDBMessageContents, {
-		keys: ['subject', 'body'],
-		threshold: -500000,
+		keys: ['subject', 'body', 'senderName'],
+		threshold: -20000,
+		scoreFn: (a) => {
+			const search = params.key.toLowerCase();
+			const exactMatch = a[1]?.target.toLowerCase().includes(search);
+			if (exactMatch) {
+				return 0;
+			} else {
+				// Use the original fuzzysort score for all other matches
+				let subjectScore = a[0] ? a[0].score : -1000;
+				let bodyScore = a[1] ? a[1].score : -1000;
+				let senderNameScore = a[2] ? a[2].score : -1000;
+				return Math.max(subjectScore, bodyScore, senderNameScore);
+			}
+		},
 	});
 	return results;
 };

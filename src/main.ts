@@ -1,8 +1,13 @@
 import { Plugin, TFile, WorkspaceLeaf, addIcon } from 'obsidian';
 import { RENDER_VIEW_TYPE, MsgHandlerView, MsgHandlerSearchView, SEARCH_VIEW_TYPE } from 'view';
-import { createDBMessageContent, deleteDBMessageContentById, getDBMessageContentsByPath, syncDatabaseWithVaultFiles } from 'database';
 import { getMsgContent } from 'utils';
 import { MSG_HANDLER_ENVELOPE_ICON } from 'icons';
+import {
+	createDBMessageContent,
+	deleteDBMessageContentById,
+	getDBMessageContentsByPath,
+	syncDatabaseWithVaultFiles,
+} from 'database';
 
 export default class MsgHandlerPlugin extends Plugin {
 	async onload() {

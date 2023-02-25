@@ -1,11 +1,13 @@
 import MsgReader, { FieldsData } from '@kenjiuno/msgreader';
 import MsgHandlerPlugin from 'main';
-import { normalizePath, MarkdownRenderer, Component, TFile } from 'obsidian';
+import { normalizePath, MarkdownRenderer, Component } from 'obsidian';
 import { CustomMessageContent, CustomRecipient } from 'types';
 import { stripIndents } from 'common-tags';
-import { getDBMessageContentsByPath, createDBMessageContent, deleteDBMessageContentById } from 'database';
 
-export const getMsgContent = async (params: { plugin: MsgHandlerPlugin; msgPath: string }): Promise<CustomMessageContent> => {
+export const getMsgContent = async (params: {
+	plugin: MsgHandlerPlugin;
+	msgPath: string;
+}): Promise<CustomMessageContent> => {
 	let msgFileBuffer = await params.plugin.app.vault.adapter.readBinary(normalizePath(params.msgPath));
 	let msgReader = new MsgReader(msgFileBuffer);
 	let fileData = msgReader.getFileData();
@@ -68,4 +70,29 @@ export const convertMessageContentToMarkdown = (msgContent: CustomMessageContent
             ${msgContent.body}
         </div>
     `);
+};
+
+export const replaceNewLinesAndCarriages = (txt: string) => {
+	return txt?.replace(/[\r\n]+/g, '');
+};
+
+export const getHighlightedPartOfSearchResult = (txt: string) => {
+	const firstStrongIndex = txt.indexOf('<mark class="oz-highlight">');
+	const lastStrongIndex = txt.lastIndexOf('</mark>');
+
+	// Get the start and end indices for the highlighted text
+	const startWordIndex = txt.lastIndexOf(' ', firstStrongIndex - 2) + 1;
+	const endWordIndex = txt.indexOf(' ', lastStrongIndex + 9);
+
+	// Add 5 words before and after the highlighted text
+	const startIndex = Math.max(startWordIndex - 5, 0);
+	const endIndex = Math.min(endWordIndex + 5, txt.length);
+
+	return txt.substring(startIndex, endIndex);
+};
+
+export const getFileName = (filePath: string) => {
+	var index = filePath.lastIndexOf('/');
+	if (index !== -1) return filePath.substring(index + 1);
+	return filePath;
 };
