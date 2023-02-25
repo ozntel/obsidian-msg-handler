@@ -1,18 +1,18 @@
-export interface CustomMessageContent {
+export interface MSGBaseData {
 	senderName: string;
 	senderEmail: string;
-	recipients: CustomRecipient[];
+	recipients: MSGRecipient[];
 	creationTime: string;
 	subject: string;
 	body: string;
 }
 
-export interface CustomRecipient {
+export interface MSGRecipient {
 	name: string;
 	email: string;
 }
 
-export interface DBCustomMessage extends CustomMessageContent {
+export interface MSGDataIndexed extends MSGBaseData {
 	id?: number;
 	filePath: string;
 	mtime: number;

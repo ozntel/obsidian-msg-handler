@@ -1,7 +1,7 @@
 import MsgHandlerPlugin from 'main';
 import { TFile } from 'obsidian';
 import React, { useEffect, useState } from 'react';
-import { CustomMessageContent, CustomRecipient } from 'types';
+import { MSGBaseData, MSGRecipient } from 'types';
 import { getMsgContent } from 'utils';
 
 /* ------------ Main Renderer Component ------------ */
@@ -9,7 +9,7 @@ import { getMsgContent } from 'utils';
 export default function RendererViewComponent(params: { plugin: MsgHandlerPlugin; fileToRender: TFile }) {
 	const { plugin, fileToRender } = params;
 
-	const [messageContent, setMessageContent] = useState<CustomMessageContent>();
+	const [messageContent, setMessageContent] = useState<MSGBaseData>();
 
 	useEffect(() => {
 		getMsgContent({ plugin: plugin, msgPath: fileToRender.path }).then((msgContent) => {
@@ -40,7 +40,7 @@ export default function RendererViewComponent(params: { plugin: MsgHandlerPlugin
 
 /* ------------ Child Components ------------ */
 
-const RecipientList = (params: { recipients: CustomRecipient[] }) => {
+const RecipientList = (params: { recipients: MSGRecipient[] }) => {
 	return (
 		<>
 			{params.recipients.map((recipient) => {

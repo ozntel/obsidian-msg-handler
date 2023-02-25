@@ -1,13 +1,13 @@
 import Dexie from 'dexie';
 import { TFile } from 'obsidian';
 import MsgHandlerPlugin from 'main';
-import { DBCustomMessage, CustomMessageContent } from 'types';
+import { MSGDataIndexed, MSGBaseData } from 'types';
 import { getMsgContent } from 'utils';
 import fuzzysort from 'fuzzysort';
 
 // --> Custom Class from Dexie to Handle Indexed DB
 export class MsgHandlerDatabase extends Dexie {
-	dbMessageContents!: Dexie.Table<DBCustomMessage, number>;
+	dbMessageContents!: Dexie.Table<MSGDataIndexed, number>;
 
 	constructor() {
 		super('MsgHandlerDatabase');
@@ -24,7 +24,7 @@ const pluginDb = new MsgHandlerDatabase();
  * Get all saved/synced message contents from Database
  * @returns Promise<DBCustomMessage[]>
  */
-export const getAllDBMessageContents = async (): Promise<DBCustomMessage[]> => {
+export const getAllDBMessageContents = async (): Promise<MSGDataIndexed[]> => {
 	return await pluginDb.dbMessageContents.toArray();
 };
 
@@ -33,7 +33,7 @@ export const getAllDBMessageContents = async (): Promise<DBCustomMessage[]> => {
  * @param { filePath: string }
  * @returns Promise<DBCustomMessage[]>
  */
-export const getDBMessageContentsByPath = async (params: { filePath: string }): Promise<DBCustomMessage[]> => {
+export const getDBMessageContentsByPath = async (params: { filePath: string }): Promise<MSGDataIndexed[]> => {
 	const { filePath } = params;
 	return await pluginDb.dbMessageContents.where('filePath').equals(filePath).toArray();
 };
@@ -42,7 +42,7 @@ export const getDBMessageContentsByPath = async (params: { filePath: string }): 
  * This function will save provided msgContent with the meta data coming from file into the database
  * @param { msgContent: CustomMessageContent, file: TFile }
  */
-export const createDBMessageContent = async (params: { msgContent: CustomMessageContent; file: TFile }) => {
+export const createDBMessageContent = async (params: { msgContent: MSGBaseData; file: TFile }) => {
 	const { msgContent, file } = params;
 	await pluginDb.dbMessageContents.add({
 		senderName: msgContent.senderName,
@@ -53,7 +53,7 @@ export const createDBMessageContent = async (params: { msgContent: CustomMessage
 		subject: msgContent.subject,
 		filePath: file.path,
 		mtime: file.stat.mtime,
-	});
+	} as MSGDataIndexed);
 };
 
 /**

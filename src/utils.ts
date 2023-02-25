@@ -1,12 +1,12 @@
 import MsgReader, { FieldsData } from '@kenjiuno/msgreader';
 import MsgHandlerPlugin from 'main';
 import { normalizePath, MarkdownRenderer, Component, TFile } from 'obsidian';
-import { CustomMessageContent, CustomRecipient } from 'types';
+import { MSGBaseData, MSGRecipient } from 'types';
 
 export const getMsgContent = async (params: {
 	plugin: MsgHandlerPlugin;
 	msgPath: string;
-}): Promise<CustomMessageContent> => {
+}): Promise<MSGBaseData> => {
 	let msgFileBuffer = await params.plugin.app.vault.adapter.readBinary(normalizePath(params.msgPath));
 	let msgReader = new MsgReader(msgFileBuffer);
 	let fileData = msgReader.getFileData();
@@ -21,7 +21,7 @@ export const getMsgContent = async (params: {
 	};
 };
 
-const getCustomRecipients = (recipients: FieldsData[]): CustomRecipient[] => {
+const getCustomRecipients = (recipients: FieldsData[]): MSGRecipient[] => {
 	if (recipients && recipients.length > 0) {
 		let customRecipients = [];
 		for (let recipient of recipients) {

@@ -3,7 +3,7 @@ import fuzzysort from 'fuzzysort';
 import MsgHandlerPlugin from 'main';
 import { MdKeyboardArrowDown, MdKeyboardArrowRight } from 'react-icons/md';
 import { CgChevronDoubleUp, CgChevronDoubleDown } from 'react-icons/cg';
-import { DBCustomMessage } from 'types';
+import { MSGDataIndexed } from 'types';
 import { searchMsgFilesWithKey } from 'database';
 import {
 	getFileName,
@@ -15,7 +15,7 @@ import {
 } from 'utils';
 import { TFile } from 'obsidian';
 
-type SearchResultSingleItem = { result: Fuzzysort.KeysResult<DBCustomMessage>; highlightedResult: string };
+type SearchResultSingleItem = { result: Fuzzysort.KeysResult<MSGDataIndexed>; highlightedResult: string };
 type SearchResultState = SearchResultSingleItem[];
 type AllOpenStatus = 'open' | 'closed' | null;
 
