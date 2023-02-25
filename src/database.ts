@@ -5,6 +5,7 @@ import { DBCustomMessage, CustomMessageContent } from 'types';
 import { getMsgContent } from 'utils';
 import fuzzysort from 'fuzzysort';
 
+// --> Custom Class from Dexie to Handle Indexed DB
 export class MsgHandlerDatabase extends Dexie {
 	dbMessageContents!: Dexie.Table<DBCustomMessage, number>;
 
@@ -16,10 +17,11 @@ export class MsgHandlerDatabase extends Dexie {
 	}
 }
 
+// --> Create Custom Class DB Instance
 const pluginDb = new MsgHandlerDatabase();
 
 /**
- * Get all saved messge contents from Database
+ * Get all saved/synced message contents from Database
  * @returns Promise<DBCustomMessage[]>
  */
 export const getAllDBMessageContents = async (): Promise<DBCustomMessage[]> => {
@@ -92,6 +94,11 @@ export const syncDatabaseWithVaultFiles = async (params: { plugin: MsgHandlerPlu
 	}
 };
 
+/**
+ * This will search Indexed DB with the provided key and return Fuzzy Results
+ * @param params
+ * @returns
+ */
 export const searchMsgFilesWithKey = async (params: { key: string }) => {
 	let allDBMessageContents = await getAllDBMessageContents();
 	const results = fuzzysort.go(params.key, allDBMessageContents, {

@@ -35,11 +35,6 @@
 	border: 0.5px solid black;
 }
 
-.no-wrap {
-	white-space: nowrap;
-	overflow: hidden;
-}
-
 .oz-searchbox-container,
 .oz-searchbox-container input {
 	width: 100%;

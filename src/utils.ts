@@ -1,6 +1,6 @@
 import MsgReader, { FieldsData } from '@kenjiuno/msgreader';
 import MsgHandlerPlugin from 'main';
-import { normalizePath, MarkdownRenderer, Component } from 'obsidian';
+import { normalizePath, MarkdownRenderer, Component, TFile } from 'obsidian';
 import { CustomMessageContent, CustomRecipient } from 'types';
 import { stripIndents } from 'common-tags';
 
@@ -95,4 +95,25 @@ export const getFileName = (filePath: string) => {
 	var index = filePath.lastIndexOf('/');
 	if (index !== -1) return filePath.substring(index + 1);
 	return filePath;
+};
+
+export const openFile = (params: {
+	file: TFile;
+	plugin: MsgHandlerPlugin;
+	newLeaf: boolean;
+	leafBySplit?: boolean;
+}) => {
+	const { file, plugin, newLeaf, leafBySplit } = params;
+	let leaf = plugin.app.workspace.getLeaf(newLeaf);
+	if (leafBySplit) leaf = plugin.app.workspace.createLeafBySplit(leaf, 'vertical');
+	plugin.app.workspace.setActiveLeaf(leaf, { focus: true });
+	leaf.openFile(file, { eState: { focus: true } });
+};
+
+export const openFileInNewTab = (params: { plugin: MsgHandlerPlugin; file: TFile }) => {
+	openFile({ file: params.file, plugin: params.plugin, newLeaf: true });
+};
+
+export const openFileInNewTabGroup = (params: { plugin: MsgHandlerPlugin; file: TFile }) => {
+	openFile({ file: params.file, plugin: params.plugin, newLeaf: false, leafBySplit: true });
 };
