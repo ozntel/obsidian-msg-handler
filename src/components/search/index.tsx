@@ -209,10 +209,13 @@ const SearchResultFileMatch = (params: {
 				</div>
 			</div>
 			{open && searchResult.highlightedResult?.length > 0 && (
-				<div
-					className="search-result-file-matches"
-					dangerouslySetInnerHTML={{ __html: searchResult.highlightedResult }}
-				/>
+				<div className="search-result-file-matches">
+					<div
+						className="search-result-file-match"
+						onClick={openFileClicked}
+						dangerouslySetInnerHTML={{ __html: searchResult.highlightedResult }}
+					/>
+				</div>
 			)}
 		</div>
 	);
