@@ -42,18 +42,23 @@ export default function SearchViewComponent(params: { plugin: MsgHandlerPlugin }
 				}
 			}
 		};
-		runPromiseQueue();
+
+		if (searchKey === '' || searchKey === null || searchKey === undefined) {
+			setSearchResults(null);
+		} else {
+			promiseQueueRef.current.push(runSearch);
+			runPromiseQueue();
+		}
 	}, [searchKey]);
 
 	// Cleanup the results if searchkey is empty
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const newSearchKey = event.target.value;
 		setSearchKey(newSearchKey);
-		promiseQueueRef.current.push(searchInit);
 	};
 
 	// --> Search Function using Current searchKey
-	const searchInit = async () => {
+	const runSearch = async () => {
 		let currentSearchResults = [];
 		// Get search results
 		let results = await searchMsgFilesWithKey({ key: searchKey });
