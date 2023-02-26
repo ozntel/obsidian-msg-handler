@@ -156,18 +156,16 @@ export const getHighlightedPartOfSearchResult = (params: { highlightedResult: st
 	if (highlightedResult.length < maxSearchDisplayLength) {
 		return highlightedResult;
 	} else {
-		// "0123456789<mark class="oz-highlight">123</mark>1234567"   // 54
-		const firstMarkIndex = highlightedResult.indexOf('<mark class="oz-highlight">'); // 10
-		const lastMarkIndex = highlightedResult.lastIndexOf('</mark>'); // 40
+		const firstMarkIndex = highlightedResult.indexOf('<mark class="oz-highlight">');
+		const lastMarkIndex = highlightedResult.lastIndexOf('</mark>');
 
-		if (firstMarkIndex === 0 || lastMarkIndex === 0) {
-			return highlightedResult;
-		}
+		// Return original text if not found
+		if (firstMarkIndex === 0 || lastMarkIndex === 0) return highlightedResult;
 
-		const searchKeyLength = searchKey.length; // 3
-		const lengthAfterHighlight = highlightedResult.length - (lastMarkIndex + 7); // 7
-		const leftUsageLength = maxSearchDisplayLength - searchKeyLength; // 117
-		const eachSideUsageLength = Math.floor(leftUsageLength / 2); // 58
+		const searchKeyLength = searchKey.length;
+		const lengthAfterHighlight = highlightedResult.length - (lastMarkIndex + 7);
+		const leftUsageLength = maxSearchDisplayLength - searchKeyLength;
+		const eachSideUsageLength = Math.floor(leftUsageLength / 2);
 
 		let startIndex = 0;
 		let startMissing = 0; // couldn't get that many characters, add to end if possible
