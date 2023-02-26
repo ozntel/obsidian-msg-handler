@@ -1,5 +1,5 @@
 import { Plugin, TFile, WorkspaceLeaf, addIcon } from 'obsidian';
-import { RENDER_VIEW_TYPE, MsgHandlerView, MsgHandlerSearchView, SEARCH_VIEW_TYPE } from 'view';
+import { RENDER_VIEW_TYPE, MsgHandlerView, MsgHandlerSearchView, SEARCH_VIEW_TYPE, ICON } from 'view';
 import { getMsgContent } from 'utils';
 import { MSG_HANDLER_ENVELOPE_ICON } from 'icons';
 import { MSGHandlerPluginSettings, MSGHandlerPluginSettingsTab, DEFAULT_SETTINGS } from 'settings';
@@ -14,11 +14,9 @@ export default class MsgHandlerPlugin extends Plugin {
 	settings: MSGHandlerPluginSettings;
 	ribbonIconEl: HTMLElement | undefined = undefined;
 
-	PLUGIN_ICON = 'MSG_HANDLER_ENVELOPE_ICON';
-
 	async onload() {
 		// --> Add Icons
-		addIcon(this.PLUGIN_ICON, MSG_HANDLER_ENVELOPE_ICON);
+		addIcon(ICON, MSG_HANDLER_ENVELOPE_ICON);
 
 		// --> Load Settings
 		this.addSettingTab(new MSGHandlerPluginSettingsTab(this.app, this));
@@ -111,7 +109,7 @@ export default class MsgHandlerPlugin extends Plugin {
 	refreshIconRibbon = () => {
 		this.ribbonIconEl?.remove();
 		if (this.settings.ribbonIcon) {
-			this.ribbonIconEl = this.addRibbonIcon(this.PLUGIN_ICON, 'MSG Handler', async () => {
+			this.ribbonIconEl = this.addRibbonIcon(ICON, 'MSG Handler', async () => {
 				await this.openMsgHandlerSearchLeaf({ showAfterAttach: true });
 			});
 		}
