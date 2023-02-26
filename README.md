@@ -8,6 +8,12 @@ The plugin basically adds a custom view to handle files with the `.msg` extensio
 
 To make the search functionality faster, the plugin observes your vault changes when it comes to `.msg` files and indexes them within a database so that it doesn't need to go back to the file and read it for each search. After each vault open/plugin load, the plugin will cross check all `.msg` files within your vault vs the database and make the necessary updates just in case you brought some of the the `.msg` files when the plugin was not turned on or your vault was not open.
 
+In the plugin msg file view, you will have 3 sections:
+
+-   **Header**: Includes information like sender name, sender email, recipients name and email, subject
+-   **Body** : Includes the plain text version of email body
+-   **Attachments**: Includes the attachments of the email. The plugin will render the images and hide them automatically by using a toggle button. You can toggle to see them. If the file is not an image, you can save the file in your vault in any folder you want. The plugin will prompt you to select the folder to save.
+
 ## Contact
 
 If you have any issue or you have any suggestion, please feel free to reach me out directly using contact page of my website [ozan.pl/contact/](https://www.ozan.pl/contact/) or directly to <me@ozan.pl>.
