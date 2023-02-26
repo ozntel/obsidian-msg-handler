@@ -23,7 +23,11 @@ export default function RendererViewComponent(params: { plugin: MsgHandlerPlugin
 			<>
 				<MSGHeaderComponent messageContent={messageContent} />
 				<MSGBodyComponent messageContent={messageContent} />
-				<MSGAttachmentsComponent messageAttachments={messageContent.attachments} plugin={plugin} />
+				<MSGAttachmentsComponent
+					messageAttachments={messageContent.attachments}
+					fileToRender={fileToRender}
+					plugin={plugin}
+				/>
 			</>
 		)
 	);
@@ -84,8 +88,12 @@ const MSGBodyComponent = (params: { messageContent: MSGRenderData }) => {
 	);
 };
 
-const MSGAttachmentsComponent = (params: { messageAttachments: MSGAttachment[]; plugin: MsgHandlerPlugin }) => {
-	const { messageAttachments, plugin } = params;
+const MSGAttachmentsComponent = (params: {
+	fileToRender: TFile;
+	messageAttachments: MSGAttachment[];
+	plugin: MsgHandlerPlugin;
+}) => {
+	const { fileToRender, messageAttachments, plugin } = params;
 	const [open, setOpen] = useState<boolean>(true);
 	const toggleOpen = () => setOpen(!open);
 	return (
@@ -100,6 +108,7 @@ const MSGAttachmentsComponent = (params: { messageAttachments: MSGAttachment[]; 
 						return (
 							<MSGSingleAttachmentComponent
 								key={attachment.fileName}
+								fileToRender={fileToRender}
 								messageAttachment={attachment}
 								plugin={plugin}
 							/>
@@ -111,15 +120,23 @@ const MSGAttachmentsComponent = (params: { messageAttachments: MSGAttachment[]; 
 	);
 };
 
-const MSGSingleAttachmentComponent = (params: { messageAttachment: MSGAttachment; plugin: MsgHandlerPlugin }) => {
-	const { messageAttachment, plugin } = params;
+const MSGSingleAttachmentComponent = (params: {
+	fileToRender: TFile;
+	messageAttachment: MSGAttachment;
+	plugin: MsgHandlerPlugin;
+}) => {
+	const { fileToRender, messageAttachment, plugin } = params;
 	const [open, setOpen] = useState<boolean>(false);
 	const toggleOpen = () => setOpen(!open);
 
-	// @TODO Find Way to Clean Blob From Memory When the Tab is Closed
 	const blobToURL = (fileArray: Uint8Array) => {
 		const blob = new Blob([fileArray]);
 		const url = URL.createObjectURL(blob);
+		// Push into loadedBlobs so that can be unloaded during file onClose (in renderer/index.tsx)
+		plugin.loadedBlobs.push({
+			url: url,
+			originFilePath: fileToRender.path,
+		});
 		return url;
 	};
 

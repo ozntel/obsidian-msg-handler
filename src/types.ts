@@ -38,3 +38,8 @@ export interface MSGDataIndexed extends MSGBaseData {
 export interface MSGDataIndexedSearchEligible extends Omit<MSGDataIndexed, 'recipients'> {
 	recipients: string;
 }
+
+export interface LoadedBlob {
+	originFilePath: string;
+	url: string;
+}

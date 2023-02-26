@@ -1,4 +1,4 @@
-import { Plugin, TFile, WorkspaceLeaf, addIcon } from 'obsidian';
+import { Plugin, TAbstractFile, TFile, WorkspaceLeaf, addIcon } from 'obsidian';
 import { RENDER_VIEW_TYPE, MsgHandlerView, MsgHandlerSearchView, SEARCH_VIEW_TYPE, ICON } from 'view';
 import { getMsgContent } from 'utils';
 import { MSG_HANDLER_ENVELOPE_ICON } from 'icons';
@@ -9,10 +9,12 @@ import {
 	getDBMessageContentsByPath,
 	syncDatabaseWithVaultFiles,
 } from 'database';
+import { LoadedBlob } from 'types';
 
 export default class MsgHandlerPlugin extends Plugin {
 	settings: MSGHandlerPluginSettings;
 	ribbonIconEl: HTMLElement | undefined = undefined;
+	loadedBlobs: LoadedBlob[] = [];
 
 	async onload() {
 		// --> Add Icons
@@ -56,7 +58,6 @@ export default class MsgHandlerPlugin extends Plugin {
 		this.app.vault.on('create', this.handleFileCreate);
 		this.app.vault.on('delete', this.handleFileDelete);
 		this.app.vault.on('rename', this.handleFileRename);
-
 		// Ribbon Icon For Opening
 		this.refreshIconRibbon();
 	}

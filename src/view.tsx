@@ -11,6 +11,7 @@ export const RENDER_VIEW_TYPE = 'msg-handler-view';
 
 export class MsgHandlerView extends FileView {
 	plugin: MsgHandlerPlugin;
+	fileToRender: TFile;
 
 	constructor(leaf: WorkspaceLeaf, plugin: MsgHandlerPlugin) {
 		super(leaf);
@@ -27,6 +28,7 @@ export class MsgHandlerView extends FileView {
 
 	async onLoadFile(file: TFile): Promise<void> {
 		this.constructMessageRenderView({ fileToRender: file });
+		this.fileToRender = file;
 	}
 
 	async constructMessageRenderView(params: { fileToRender: TFile }) {
@@ -37,6 +39,18 @@ export class MsgHandlerView extends FileView {
 			</div>,
 			this.contentEl
 		);
+	}
+
+	async onClose(): Promise<void> {
+		let loadedBlobsForFile = this.plugin.loadedBlobs.filter(
+			(b) => b.originFilePath === this.fileToRender.path
+		);
+		for (let loadedBlob of loadedBlobsForFile) {
+			URL.revokeObjectURL(loadedBlob.url);
+			if (this.plugin.settings.logEnabled) {
+				console.log(`Revoked Blob Object ${loadedBlob.url} viewed in ${loadedBlob.originFilePath}`);
+			}
+		}
 	}
 
 	async onUnloadFile(file: TFile): Promise<void> {
