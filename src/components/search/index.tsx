@@ -62,31 +62,20 @@ export default function SearchViewComponent(params: { plugin: MsgHandlerPlugin }
 			let indexOfMaxScore = null;
 			let exactMatch = false;
 			// First check exact match
-			if (result[0]?.target.toLowerCase().includes(searchKey.toLowerCase())) {
-				indexOfMaxScore = 0;
-				exactMatch = true;
-			} else if (result[1]?.target.toLowerCase().includes(searchKey.toLowerCase())) {
-				indexOfMaxScore = 1;
-				exactMatch = true;
-			} else if (result[2]?.target.toLowerCase().includes(searchKey.toLowerCase())) {
-				indexOfMaxScore = 2;
-				exactMatch = true;
-			} else if (result[3]?.target.toLowerCase().includes(searchKey.toLowerCase())) {
-				indexOfMaxScore = 3;
-				exactMatch = true;
-			} else if (result[4]?.target.toLowerCase().includes(searchKey.toLowerCase())) {
-				indexOfMaxScore = 4;
+			const exactMatchIndex = result.findIndex((r) =>
+				r?.target.toLowerCase().includes(searchKey.toLowerCase())
+			);
+			if (exactMatchIndex !== -1) {
+				indexOfMaxScore = exactMatchIndex;
 				exactMatch = true;
 			}
 			// If no exact match, Get the best score from fields
 			else {
-				let senderNameScore = result[0] ? result[0].score : -100000;
-				let senderEmailScore = result[1] ? result[1].score : -100000;
-				let subjectScore = result[2] ? result[2].score : -100000;
-				let bodyScore = result[3] ? result[3].score : -100000;
-				let recipientsScore = result[4] ? result[4].score : -100000;
-				let allScores = [senderNameScore, senderEmailScore, subjectScore, bodyScore, recipientsScore];
-				indexOfMaxScore = allScores.indexOf(Math.max(...allScores));
+				const scores = result.map((r) => r?.score ?? -100000);
+				indexOfMaxScore = scores.reduce(
+					(maxIndex, score, index) => (score > scores[maxIndex] ? index : maxIndex),
+					0
+				);
 			}
 			// Get highligted html
 			let highlightedResult = null;
