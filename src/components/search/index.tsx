@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import fuzzysort from 'fuzzysort';
 import MsgHandlerPlugin from 'main';
 import { MdKeyboardArrowDown, MdKeyboardArrowRight } from 'react-icons/md';
@@ -26,7 +26,33 @@ export default function SearchViewComponent(params: { plugin: MsgHandlerPlugin }
 	// Helper state to collapse/expand all (inherited in the child components)
 	const [allOpenStatus, setAllOpenStatus] = useState<AllOpenStatus>();
 
-	// --> Search Button Click or Enter Press
+	// Handle Search Promises in Order
+	const promiseQueueRef = useRef([]);
+
+	useEffect(() => {
+		const runPromiseQueue = async () => {
+			while (promiseQueueRef.current.length > 0) {
+				const nextPromise = promiseQueueRef.current[0];
+				try {
+					await nextPromise();
+				} catch (error) {
+					if (plugin.settings.logEnabled) console.log('Search promise failed', error);
+				} finally {
+					promiseQueueRef.current.shift(); // remove the completed promise from the queue
+				}
+			}
+		};
+		runPromiseQueue();
+	}, [searchKey]);
+
+	// Cleanup the results if searchkey is empty
+	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const newSearchKey = event.target.value;
+		setSearchKey(newSearchKey);
+		promiseQueueRef.current.push(searchInit);
+	};
+
+	// --> Search Function using Current searchKey
 	const searchInit = async () => {
 		let currentSearchResults = [];
 		// Get search results
@@ -105,11 +131,6 @@ export default function SearchViewComponent(params: { plugin: MsgHandlerPlugin }
 		setSearchResults(currentSearchResults);
 	};
 
-	// Cleanup the results if searchkey is empty
-	useEffect(() => {
-		if (searchKey === '') setSearchResults(null);
-	}, [searchKey]);
-
 	return (
 		<div>
 			<div className="oz-msg-handler-actions-items oz-msg-handler-header-fixed">
@@ -117,11 +138,13 @@ export default function SearchViewComponent(params: { plugin: MsgHandlerPlugin }
 					className="oz-msg-handler-action-button"
 					aria-label="Collapse All"
 					onClick={() => setAllOpenStatus('closed')}
+					size={20}
 				/>
 				<CgChevronDoubleDown
 					className="oz-msg-handler-action-button"
 					aria-label="Expand All"
 					onClick={() => setAllOpenStatus('open')}
+					size={20}
 				/>
 			</div>
 			<div className="oz-searchbox-container">
@@ -129,14 +152,7 @@ export default function SearchViewComponent(params: { plugin: MsgHandlerPlugin }
 					type="text"
 					placeholder="Provide a search key"
 					value={searchKey}
-					onChange={(e) => {
-						setSearchKey(e.target.value);
-					}}
-					onKeyDown={(e) => {
-						if (e.key === 'Enter') {
-							searchInit();
-						}
-					}}
+					onChange={handleInputChange}
 				/>
 			</div>
 			<div className="search-result-container">
