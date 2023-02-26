@@ -14,6 +14,15 @@
 	background-color: var(--background-secondary);
 }
 
+.msg-handler-plugin-search .search-result-file-matches {
+	padding: 5px;
+}
+
+.msg-handler-plugin-search .search-result-container {
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
 .oz-msg-handler-body,
 .oz-msg-handler-header {
 	margin-bottom: 10px;

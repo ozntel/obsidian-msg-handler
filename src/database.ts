@@ -117,8 +117,13 @@ export const searchMsgFilesWithKey = async (params: { key: string }) => {
 			keys: ['senderName', 'senderEmail', 'subject', 'body', 'recipients'],
 			threshold: -20000,
 			scoreFn: (a) => {
-				const search = params.key.toLowerCase();
-				const exactMatch = a[1]?.target.toLowerCase().includes(search);
+				const searchKey = params.key.toLowerCase();
+				const exactMatch =
+					a[0]?.target.toLowerCase().includes(searchKey) ||
+					a[1]?.target.toLowerCase().includes(searchKey) ||
+					a[2]?.target.toLowerCase().includes(searchKey) ||
+					a[3]?.target.toLowerCase().includes(searchKey) ||
+					a[4]?.target.toLowerCase().includes(searchKey);
 				if (exactMatch) {
 					return 0;
 				} else {
@@ -143,17 +148,62 @@ export const searchMsgFilesWithKey = async (params: { key: string }) => {
  * @param txt
  * @returns
  */
-export const getHighlightedPartOfSearchResult = (txt: string) => {
-	const firstStrongIndex = txt.indexOf('<mark class="oz-highlight">');
-	const lastStrongIndex = txt.lastIndexOf('</mark>');
+export const getHighlightedPartOfSearchResult = (params: { highlightedResult: string; searchKey: string }) => {
+	const { highlightedResult, searchKey } = params;
 
-	// Get the start and end indices for the highlighted text
-	const startWordIndex = txt.lastIndexOf(' ', firstStrongIndex - 2) + 1;
-	const endWordIndex = txt.indexOf(' ', lastStrongIndex + 9);
+	let maxSearchDisplayLength = 120;
 
-	// Add 5 words before and after the highlighted text
-	const startIndex = Math.max(startWordIndex - 5, 0);
-	const endIndex = Math.min(endWordIndex + 5, txt.length);
+	if (highlightedResult.length < maxSearchDisplayLength) {
+		return highlightedResult;
+	} else {
+		// "0123456789<mark class="oz-highlight">123</mark>1234567"   // 54
+		const firstMarkIndex = highlightedResult.indexOf('<mark class="oz-highlight">'); // 10
+		const lastMarkIndex = highlightedResult.lastIndexOf('</mark>'); // 40
 
-	return txt.substring(startIndex, endIndex);
+		if (firstMarkIndex === 0 || lastMarkIndex === 0) {
+			return highlightedResult;
+		}
+
+		const searchKeyLength = searchKey.length; // 3
+		const lengthAfterHighlight = highlightedResult.length - (lastMarkIndex + 7); // 7
+		const leftUsageLength = maxSearchDisplayLength - searchKeyLength; // 117
+		const eachSideUsageLength = Math.floor(leftUsageLength / 2); // 58
+
+		let startIndex = 0;
+		let startMissing = 0; // couldn't get that many characters, add to end if possible
+		let startLeft = 0; // still can get that many from the beginning
+		if (firstMarkIndex > eachSideUsageLength) {
+			// There is more than enough text, extract only limited text
+			startIndex = firstMarkIndex - eachSideUsageLength;
+			startLeft = firstMarkIndex - eachSideUsageLength;
+		} else {
+			// There wasn't enough text enough, try to attach to end
+			startMissing = eachSideUsageLength - firstMarkIndex;
+		}
+
+		let endIndex = highlightedResult.length - 1;
+		if (lengthAfterHighlight > eachSideUsageLength) {
+			// There is more than enough text, extract only limited text
+			endIndex = lastMarkIndex + 7 + eachSideUsageLength;
+			// Try to add more if startMissing is more than 0
+			let endLeftPlace = highlightedResult.length - 1 - endIndex;
+			if (endLeftPlace > startMissing) {
+				endIndex += startMissing;
+			} else {
+				endIndex = highlightedResult.length - 1;
+			}
+		} else {
+			// There wasn't enough text at the end, try to attach to the start
+			let endMissing = eachSideUsageLength - lengthAfterHighlight;
+			if (endMissing > 0) {
+				if (startIndex > endMissing) {
+					startIndex = startIndex - endMissing;
+				} else {
+					startIndex = 0;
+				}
+			}
+		}
+
+		return '...' + highlightedResult.substring(startIndex, endIndex) + '...';
+	}
 };

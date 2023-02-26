@@ -5,13 +5,7 @@ import { MdKeyboardArrowDown, MdKeyboardArrowRight } from 'react-icons/md';
 import { CgChevronDoubleUp, CgChevronDoubleDown } from 'react-icons/cg';
 import { MSGDataIndexedSearchEligible } from 'types';
 import { searchMsgFilesWithKey, getHighlightedPartOfSearchResult } from 'database';
-import {
-	getFileName,
-	replaceNewLinesAndCarriages,
-	openFile,
-	openFileInNewTab,
-	openFileInNewTabGroup,
-} from 'utils';
+import { getFileName, replaceNewLinesAndCarriages, openFile, openFileInNewTab } from 'utils';
 import { TFile } from 'obsidian';
 
 type SearchResultSingleItem = {
@@ -39,35 +33,81 @@ export default function SearchViewComponent(params: { plugin: MsgHandlerPlugin }
 		let results = await searchMsgFilesWithKey({ key: searchKey });
 		// Loop results to populate component state
 		for (let result of results) {
-			// Get the best score from fields 0, 1, 2 ['subject', 'body', 'senderName']
-			let senderNameScore = result[0] ? result[0].score : -100000;
-			let senderEmailScore = result[1] ? result[1].score : -100000;
-			let subjectScore = result[2] ? result[2].score : -100000;
-			let bodyScore = result[3] ? result[3].score : -100000;
-			let recipientsScore = result[4] ? result[4].score : -100000;
-			let allScores = [senderNameScore, senderEmailScore, subjectScore, bodyScore, recipientsScore];
-			let indexOfMaxScore = allScores.indexOf(Math.max(...allScores));
+			let indexOfMaxScore = null;
+			let exactMatch = false;
+			// First check exact match
+			if (result[0]?.target.toLowerCase().includes(searchKey.toLowerCase())) {
+				indexOfMaxScore = 0;
+				exactMatch = true;
+			} else if (result[1]?.target.toLowerCase().includes(searchKey.toLowerCase())) {
+				indexOfMaxScore = 1;
+				exactMatch = true;
+			} else if (result[2]?.target.toLowerCase().includes(searchKey.toLowerCase())) {
+				indexOfMaxScore = 2;
+				exactMatch = true;
+			} else if (result[3]?.target.toLowerCase().includes(searchKey.toLowerCase())) {
+				indexOfMaxScore = 3;
+				exactMatch = true;
+			} else if (result[4]?.target.toLowerCase().includes(searchKey.toLowerCase())) {
+				indexOfMaxScore = 4;
+				exactMatch = true;
+			}
+			// If no exact match, Get the best score from fields
+			else {
+				let senderNameScore = result[0] ? result[0].score : -100000;
+				let senderEmailScore = result[1] ? result[1].score : -100000;
+				let subjectScore = result[2] ? result[2].score : -100000;
+				let bodyScore = result[3] ? result[3].score : -100000;
+				let recipientsScore = result[4] ? result[4].score : -100000;
+				let allScores = [senderNameScore, senderEmailScore, subjectScore, bodyScore, recipientsScore];
+				indexOfMaxScore = allScores.indexOf(Math.max(...allScores));
+			}
 			// Get highligted html
-			let highlightedResult = fuzzysort.highlight(
-				result[indexOfMaxScore],
-				'<mark class="oz-highlight">',
-				'</mark>'
-			);
-			if (highlightedResult) {
-				highlightedResult = getHighlightedPartOfSearchResult(
-					replaceNewLinesAndCarriages(highlightedResult)
+			let highlightedResult = null;
+			if (exactMatch) {
+				// Prepare the exact match text manually
+				let indexOfSearchMatch = result[indexOfMaxScore].target
+					.toLowerCase()
+					.indexOf(searchKey.toLowerCase());
+				let lengthOfSearchKey = searchKey.length;
+				let originalTextOfSearchKey = result[indexOfMaxScore].target.substring(
+					indexOfSearchMatch,
+					indexOfSearchMatch + lengthOfSearchKey
+				);
+				highlightedResult = result[indexOfMaxScore].target.replace(
+					originalTextOfSearchKey,
+					'<mark class="oz-highlight">' + originalTextOfSearchKey + '</mark>'
+				);
+			} else {
+				highlightedResult = fuzzysort.highlight(
+					result[indexOfMaxScore],
+					'<mark class="oz-highlight">',
+					'</mark>'
 				);
 			}
+
+			// If there is a highlighted result, cleanup the new line signs
+			if (highlightedResult) {
+				highlightedResult = getHighlightedPartOfSearchResult({
+					highlightedResult: replaceNewLinesAndCarriages(highlightedResult),
+					searchKey: searchKey,
+				});
+			}
+
+			// Push for display results
 			currentSearchResults.push({
 				result: result,
 				highlightedResult: highlightedResult,
 			});
 		}
+
+		// After obtaining all results, push into the component state
 		setSearchResults(currentSearchResults);
 	};
 
+	// Cleanup the results if searchkey is empty
 	useEffect(() => {
-		if (searchKey === '') setSearchResults([]);
+		if (searchKey === '') setSearchResults(null);
 	}, [searchKey]);
 
 	return (
@@ -99,16 +139,22 @@ export default function SearchViewComponent(params: { plugin: MsgHandlerPlugin }
 					}}
 				/>
 			</div>
-			{searchResults &&
-				searchResults.map((searchResult) => {
-					return (
-						<SearchResultFileMatch
-							searchResult={searchResult}
-							allOpenStatus={allOpenStatus}
-							plugin={plugin}
-						/>
-					);
-				})}
+			<div className="search-result-container">
+				{searchResults &&
+					(searchResults.length > 0 ? (
+						searchResults.map((searchResult) => {
+							return (
+								<SearchResultFileMatch
+									searchResult={searchResult}
+									allOpenStatus={allOpenStatus}
+									plugin={plugin}
+								/>
+							);
+						})
+					) : (
+						<div className="search-empty-state">No matches found</div>
+					))}
+			</div>
 		</div>
 	);
 }
