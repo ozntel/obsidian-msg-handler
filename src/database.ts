@@ -1,7 +1,7 @@
 import Dexie from 'dexie';
 import { TFile } from 'obsidian';
 import MsgHandlerPlugin from 'main';
-import { MSGDataIndexed, MSGBaseData } from 'types';
+import { MSGDataIndexed, MSGBaseData, MSGDataIndexedSearchEligible } from 'types';
 import { getMsgContent } from 'utils';
 import fuzzysort from 'fuzzysort';
 
@@ -100,24 +100,39 @@ export const syncDatabaseWithVaultFiles = async (params: { plugin: MsgHandlerPlu
  * @returns
  */
 export const searchMsgFilesWithKey = async (params: { key: string }) => {
-	let allDBMessageContents = await getAllDBMessageContents();
-	const results = fuzzysort.go(params.key, allDBMessageContents, {
-		keys: ['subject', 'body', 'senderName'],
-		threshold: -20000,
-		scoreFn: (a) => {
-			const search = params.key.toLowerCase();
-			const exactMatch = a[1]?.target.toLowerCase().includes(search);
-			if (exactMatch) {
-				return 0;
-			} else {
-				// Use the original fuzzysort score for all other matches
-				let subjectScore = a[0] ? a[0].score : -1000;
-				let bodyScore = a[1] ? a[1].score : -1000;
-				let senderNameScore = a[2] ? a[2].score : -1000;
-				return Math.max(subjectScore, bodyScore, senderNameScore);
-			}
-		},
-	});
+	// Get all Message Contents from DB Indexed
+	let allDBMessageContents: MSGDataIndexed[] = await getAllDBMessageContents();
+	// Create New Variable to Store the Contents and Convert all Fields to String
+	let searchConvenientMessageContents: MSGDataIndexedSearchEligible[] = allDBMessageContents.map(
+		(messageContent) => ({
+			...messageContent,
+			recipients: messageContent.recipients.map((r) => r.name + ' <' + r.email + '>').join(', '),
+		})
+	);
+	// Evaluate the fields and get the best result
+	const results: Fuzzysort.KeysResults<MSGDataIndexedSearchEligible> = fuzzysort.go(
+		params.key,
+		searchConvenientMessageContents,
+		{
+			keys: ['senderName', 'senderEmail', 'subject', 'body', 'recipients'],
+			threshold: -20000,
+			scoreFn: (a) => {
+				const search = params.key.toLowerCase();
+				const exactMatch = a[1]?.target.toLowerCase().includes(search);
+				if (exactMatch) {
+					return 0;
+				} else {
+					// Use the original fuzzysort score for all other matches
+					let senderNameScore = a[0] ? a[0].score : -100000;
+					let senderEmailScore = a[1] ? a[1].score : -100000;
+					let subjectScore = a[2] ? a[2].score : -100000;
+					let bodyScore = a[3] ? a[3].score : -100000;
+					let recipientsScore = a[4] ? a[4].score : -100000;
+					return Math.max(senderNameScore, senderEmailScore, subjectScore, bodyScore, recipientsScore);
+				}
+			},
+		}
+	);
 	return results;
 };
 

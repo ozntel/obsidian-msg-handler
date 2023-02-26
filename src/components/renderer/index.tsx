@@ -43,7 +43,18 @@ const MSGHeaderComponent = (params: { messageContent: MSGRenderData }) => {
 			</h3>
 			{open && (
 				<div className="oz-msg-handler-header">
-					<strong>From</strong>: {messageContent.senderName} <br></br>
+					<strong>From</strong>: {messageContent.senderName}
+					{' <'}
+					<a
+						aria-label={'mailTo:' + messageContent.senderEmail}
+						href={'mailTo:' + messageContent.senderEmail}
+						target="_blank"
+						className="external-link"
+						rel="noopener">
+						{messageContent.senderEmail}
+					</a>
+					{'>'}
+					<br></br>
 					<strong>Recipients</strong>: <RecipientList recipients={messageContent.recipients} /> <br></br>
 					<strong>Sent</strong>: {messageContent.creationTime} <br></br>
 					<strong>Subject</strong>: {messageContent.subject}
@@ -148,9 +159,10 @@ const MSGSingleAttachmentComponent = (params: { messageAttachment: MSGAttachment
 /* ------------ Helper Components ------------ */
 
 const RecipientList = (params: { recipients: MSGRecipient[] }) => {
+	const { recipients } = params;
 	return (
 		<>
-			{params.recipients.map((recipient) => {
+			{recipients.map((recipient) => {
 				return (
 					<span id={recipient.email}>
 						{recipient.name}
@@ -163,7 +175,8 @@ const RecipientList = (params: { recipients: MSGRecipient[] }) => {
 							rel="noopener">
 							{recipient.email}
 						</a>
-						{'>; '}
+						{'>'}
+						{recipients.length > 1 ? '; ' : ''}
 					</span>
 				);
 			})}

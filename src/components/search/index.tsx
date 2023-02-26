@@ -3,7 +3,7 @@ import fuzzysort from 'fuzzysort';
 import MsgHandlerPlugin from 'main';
 import { MdKeyboardArrowDown, MdKeyboardArrowRight } from 'react-icons/md';
 import { CgChevronDoubleUp, CgChevronDoubleDown } from 'react-icons/cg';
-import { MSGDataIndexed } from 'types';
+import { MSGDataIndexedSearchEligible } from 'types';
 import { searchMsgFilesWithKey, getHighlightedPartOfSearchResult } from 'database';
 import {
 	getFileName,
@@ -14,7 +14,10 @@ import {
 } from 'utils';
 import { TFile } from 'obsidian';
 
-type SearchResultSingleItem = { result: Fuzzysort.KeysResult<MSGDataIndexed>; highlightedResult: string };
+type SearchResultSingleItem = {
+	result: Fuzzysort.KeysResult<MSGDataIndexedSearchEligible>;
+	highlightedResult: string;
+};
 type SearchResultState = SearchResultSingleItem[];
 type AllOpenStatus = 'open' | 'closed' | null;
 
@@ -36,8 +39,20 @@ export default function SearchViewComponent(params: { plugin: MsgHandlerPlugin }
 		let results = await searchMsgFilesWithKey({ key: searchKey });
 		// Loop results to populate component state
 		for (let result of results) {
+			// Get the best score from fields 0, 1, 2 ['subject', 'body', 'senderName']
+			let senderNameScore = result[0] ? result[0].score : -100000;
+			let senderEmailScore = result[1] ? result[1].score : -100000;
+			let subjectScore = result[2] ? result[2].score : -100000;
+			let bodyScore = result[3] ? result[3].score : -100000;
+			let recipientsScore = result[4] ? result[4].score : -100000;
+			let allScores = [senderNameScore, senderEmailScore, subjectScore, bodyScore, recipientsScore];
+			let indexOfMaxScore = allScores.indexOf(Math.max(...allScores));
 			// Get highligted html
-			let highlightedResult = fuzzysort.highlight(result[1], '<mark class="oz-highlight">', '</mark>');
+			let highlightedResult = fuzzysort.highlight(
+				result[indexOfMaxScore],
+				'<mark class="oz-highlight">',
+				'</mark>'
+			);
 			if (highlightedResult) {
 				highlightedResult = getHighlightedPartOfSearchResult(
 					replaceNewLinesAndCarriages(highlightedResult)
