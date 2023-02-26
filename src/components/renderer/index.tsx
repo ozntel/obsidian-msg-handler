@@ -132,7 +132,7 @@ const MSGSingleAttachmentComponent = (params: { messageAttachment: MSGAttachment
 		modal.open();
 	};
 
-	const imgExtensions: string[] = ['.png', 'png', '.jpg'];
+	const imgExtensions: string[] = ['.png', 'png', '.jpg', 'jpg', '.jpeg', 'jpeg'];
 
 	return (
 		<div className="oz-msg-single-attachment-wrapper">
