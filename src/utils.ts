@@ -15,7 +15,6 @@ export const getMsgContent = async (params: {
 	let msgFileBuffer = await params.plugin.app.vault.adapter.readBinary(normalizePath(params.msgPath));
 	let msgReader = new MsgReader(msgFileBuffer);
 	let fileData = msgReader.getFileData();
-	console.log(fileData);
 	return {
 		senderName: dataOrEmpty(fileData.senderName),
 		senderEmail: dataOrEmpty(fileData.senderSmtpAddress),

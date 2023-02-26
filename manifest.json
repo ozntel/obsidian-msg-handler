@@ -1,9 +1,9 @@
 {
-	"id": "obsidian-msg-handler",
-	"name": "Obsidian MSG Handler",
+	"id": "msg-handler",
+	"name": "MSG Handler",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "This plugin is created to handle msg files from Outlook",
+	"description": "This plugin is created to display and easily search for msg files from Outlook",
 	"author": "Ozan Tellioglu",
 	"authorUrl": "https://www.ozan.pl",
 	"fundingUrl": "https://ko-fi.com/ozante",

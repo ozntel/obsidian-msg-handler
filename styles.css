@@ -118,3 +118,13 @@
 .oz-msg-attachments-body-name {
 	color: var(--text-muted);
 }
+
+.oz-msg-handler-coffee-div,
+.oz-msg-handler-tip-div {
+	text-align: center;
+	margin-top: 10px;
+}
+
+.oz-msg-handler-tip-div img {
+	border-radius: 10px;
+}
