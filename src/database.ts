@@ -171,11 +171,9 @@ export const getHighlightedPartOfSearchResult = (params: { highlightedResult: st
 
 		let startIndex = 0;
 		let startMissing = 0; // couldn't get that many characters, add to end if possible
-		let startLeft = 0; // still can get that many from the beginning
 		if (firstMarkIndex > eachSideUsageLength) {
 			// There is more than enough text, extract only limited text
 			startIndex = firstMarkIndex - eachSideUsageLength;
-			startLeft = firstMarkIndex - eachSideUsageLength;
 		} else {
 			// There wasn't enough text enough, try to attach to end
 			startMissing = eachSideUsageLength - firstMarkIndex;
