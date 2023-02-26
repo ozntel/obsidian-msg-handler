@@ -160,7 +160,7 @@ export const getHighlightedPartOfSearchResult = (params: { highlightedResult: st
 		const lastMarkIndex = highlightedResult.lastIndexOf('</mark>');
 
 		// Return original text if not found
-		if (firstMarkIndex === 0 || lastMarkIndex === 0) return highlightedResult;
+		if (firstMarkIndex === -1 || lastMarkIndex === -1) return highlightedResult;
 
 		const searchKeyLength = searchKey.length;
 		const lengthAfterHighlight = highlightedResult.length - (lastMarkIndex + 7);
