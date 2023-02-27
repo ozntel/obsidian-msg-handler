@@ -5,8 +5,8 @@ import { MdKeyboardArrowDown, MdKeyboardArrowRight } from 'react-icons/md';
 import { CgChevronDoubleUp, CgChevronDoubleDown } from 'react-icons/cg';
 import { MSGDataIndexedSearchEligible } from 'types';
 import { searchMsgFilesWithKey, getHighlightedPartOfSearchResult } from 'database';
-import { getFileName, replaceNewLinesAndCarriages, openFile, openFileInNewTab } from 'utils';
-import { TFile } from 'obsidian';
+import { getFileName, replaceNewLinesAndCarriages, openFile, openFileInNewTab, isMouseEvent } from 'utils';
+import { TFile, Menu } from 'obsidian';
 
 type SearchResultSingleItem = {
 	result: Fuzzysort.KeysResult<MSGDataIndexedSearchEligible>;
@@ -204,6 +204,19 @@ const SearchResultFileMatch = (params: {
 		if (e.button === 1 && file) openFileInNewTab({ plugin: plugin, file: file as TFile });
 	};
 
+	// --> Context Menu
+	const triggerContextMenu = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+		const fileMenu = new Menu();
+		const filePath = searchResult.result.obj.filePath;
+		const file = plugin.app.vault.getAbstractFileByPath(filePath);
+		if (file) {
+			plugin.app.workspace.trigger('file-menu', fileMenu, file, 'file-explorer');
+			if (isMouseEvent) {
+				fileMenu.showAtPosition({ x: e.pageX, y: e.pageY });
+			}
+		}
+	};
+
 	return (
 		<div key={searchResult.result.obj.filePath} className="tree-item search-result">
 			<div className="tree-item-self search-result-file-title is-clickable">
@@ -214,7 +227,11 @@ const SearchResultFileMatch = (params: {
 						<MdKeyboardArrowRight onClick={() => setOpen(true)} />
 					)}
 				</div>
-				<div className="tree-item-inner" onClick={openFileClicked} onAuxClick={onAuxClick}>
+				<div
+					className="tree-item-inner"
+					onClick={openFileClicked}
+					onAuxClick={onAuxClick}
+					onContextMenu={triggerContextMenu}>
 					{getFileName(searchResult.result.obj.filePath)}
 				</div>
 			</div>

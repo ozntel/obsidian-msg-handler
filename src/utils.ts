@@ -139,3 +139,12 @@ export const openFileInNewTab = (params: { plugin: MsgHandlerPlugin; file: TFile
 export const openFileInNewTabGroup = (params: { plugin: MsgHandlerPlugin; file: TFile }) => {
 	openFile({ file: params.file, plugin: params.plugin, newLeaf: false, leafBySplit: true });
 };
+
+/**
+ * Check if event is a mouse event
+ * @param e
+ * @returns
+ */
+export function isMouseEvent(e: React.TouchEvent | React.MouseEvent): e is React.MouseEvent {
+	return e && 'screenX' in e;
+}
