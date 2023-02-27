@@ -10,9 +10,9 @@ import { MSGRenderData, MSGRecipient, MSGAttachment } from 'types';
  */
 export const getMsgContent = async (params: {
 	plugin: MsgHandlerPlugin;
-	msgPath: string;
+	msgFile: TFile;
 }): Promise<MSGRenderData> => {
-	let msgFileBuffer = await params.plugin.app.vault.adapter.readBinary(normalizePath(params.msgPath));
+	let msgFileBuffer = await params.plugin.app.vault.readBinary(params.msgFile);
 	let msgReader = new MsgReader(msgFileBuffer);
 	let fileData = msgReader.getFileData();
 	return {

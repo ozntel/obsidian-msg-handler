@@ -85,7 +85,7 @@ export const syncDatabaseWithVaultFiles = async (params: { plugin: MsgHandlerPlu
 	// Create the msgFiles in DB, which do not exist
 	for (let msgFile of msgFiles) {
 		if (!dbMsgContents.some((c) => c.filePath === msgFile.path)) {
-			let msgContent = await getMsgContent({ plugin: plugin, msgPath: msgFile.path });
+			let msgContent = await getMsgContent({ plugin: plugin, msgFile: msgFile });
 			await createDBMessageContent({
 				msgContent: msgContent,
 				file: msgFile,

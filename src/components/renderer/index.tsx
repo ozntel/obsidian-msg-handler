@@ -13,7 +13,7 @@ export default function RendererViewComponent(params: { plugin: MsgHandlerPlugin
 	const [messageContent, setMessageContent] = useState<MSGRenderData>();
 
 	useEffect(() => {
-		getMsgContent({ plugin: plugin, msgPath: fileToRender.path }).then((msgContent) => {
+		getMsgContent({ plugin: plugin, msgFile: fileToRender }).then((msgContent) => {
 			setMessageContent(msgContent);
 		});
 	}, []);

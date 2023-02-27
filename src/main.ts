@@ -126,7 +126,7 @@ export default class MsgHandlerPlugin extends Plugin {
 		if (file.path.endsWith('msg')) {
 			let dbMsgContents = await getDBMessageContentsByPath({ filePath: file.path });
 			if (dbMsgContents.length === 0) {
-				let msgContent = await getMsgContent({ plugin: this, msgPath: file.path });
+				let msgContent = await getMsgContent({ plugin: this, msgFile: file });
 				createDBMessageContent({
 					msgContent: msgContent,
 					file: file as TFile,
