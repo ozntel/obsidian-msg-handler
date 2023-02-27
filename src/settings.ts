@@ -3,13 +3,11 @@ import { PluginSettingTab, Setting, App } from 'obsidian';
 
 export interface MSGHandlerPluginSettings {
 	searchEnabled: boolean;
-	ribbonIcon: boolean;
 	logEnabled: boolean;
 }
 
 export const DEFAULT_SETTINGS: MSGHandlerPluginSettings = {
 	searchEnabled: true,
-	ribbonIcon: true,
 	logEnabled: false,
 };
 
@@ -63,17 +61,6 @@ export class MSGHandlerPluginSettingsTab extends PluginSettingTab {
 					} else {
 						this.plugin.detachMsgHandlerSearchLeaf();
 					}
-				})
-			);
-
-		new Setting(containerEl)
-			.setName('Ribbon Icon')
-			.setDesc('Turn on if you want Ribbon Icon for activating the MSG Search View.')
-			.addToggle((toggle) =>
-				toggle.setValue(this.plugin.settings.ribbonIcon).onChange((value) => {
-					this.plugin.settings.ribbonIcon = value;
-					this.plugin.saveSettings();
-					this.plugin.refreshIconRibbon();
 				})
 			);
 

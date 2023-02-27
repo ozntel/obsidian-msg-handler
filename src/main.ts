@@ -58,8 +58,11 @@ export default class MsgHandlerPlugin extends Plugin {
 		this.app.vault.on('create', this.handleFileCreate);
 		this.app.vault.on('delete', this.handleFileDelete);
 		this.app.vault.on('rename', this.handleFileRename);
+
 		// Ribbon Icon For Opening
-		this.refreshIconRibbon();
+		this.ribbonIconEl = this.addRibbonIcon(ICON, 'MSG Handler', async () => {
+			await this.openMsgHandlerSearchLeaf({ showAfterAttach: true });
+		});
 	}
 
 	onunload() {
@@ -106,15 +109,6 @@ export default class MsgHandlerPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
-
-	refreshIconRibbon = () => {
-		this.ribbonIconEl?.remove();
-		if (this.settings.ribbonIcon) {
-			this.ribbonIconEl = this.addRibbonIcon(ICON, 'MSG Handler', async () => {
-				await this.openMsgHandlerSearchLeaf({ showAfterAttach: true });
-			});
-		}
-	};
 
 	/* --------------- EVENT HANDLERS FOR VAULT FILE CHANGES -------------- */
 
