@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { MSGAttachment, MSGRecipient, MSGRenderData } from 'types';
 import { getMsgContent } from 'utils';
 import { MdKeyboardArrowDown, MdKeyboardArrowRight, MdClose } from 'react-icons/md';
+import { HiChevronDoubleRight, HiChevronDoubleLeft } from 'react-icons/hi';
 import { FolderToSaveSuggestionModal } from 'modals';
 
 /* ------------ Main Renderer Component ------------ */
@@ -157,7 +158,7 @@ const MSGSingleAttachmentComponent = (params: {
 				{imgExtensions.includes(messageAttachment.fileExtension) ? (
 					<ToggleIndicator open={open} />
 				) : (
-					<MdClose className="react-icon" />
+					<MdClose className="msg-handler-react-icon" />
 				)}
 				{messageAttachment.fileName}
 				<button onClick={saveFileToVault}>Save File to Vault</button>
@@ -177,31 +178,56 @@ const MSGSingleAttachmentComponent = (params: {
 
 const RecipientList = (params: { recipients: MSGRecipient[] }) => {
 	const { recipients } = params;
+	const [open, setOpen] = useState<boolean>();
+
+	const moreThanOneRecipient = recipients.length > 1;
+
+	useEffect(() => setOpen(!moreThanOneRecipient), []);
+
 	return (
 		<>
-			{recipients.map((recipient) => {
-				return (
-					<span id={recipient.email}>
-						{recipient.name}
-						{' <'}
-						<a
-							aria-label={'mailTo:' + recipient.email}
-							href={'mailTo:' + recipient.email}
-							target="_blank"
-							className="external-link"
-							rel="noopener">
-							{recipient.email}
-						</a>
-						{'>'}
-						{recipients.length > 1 ? '; ' : ''}
-					</span>
-				);
-			})}
+			{moreThanOneRecipient &&
+				(open ? (
+					<HiChevronDoubleLeft
+						className="msg-handler-react-icon"
+						onClick={() => setOpen(false)}
+						size="18"
+					/>
+				) : (
+					<HiChevronDoubleRight
+						className="msg-handler-react-icon"
+						onClick={() => setOpen(true)}
+						size="18"
+					/>
+				))}
+			{open &&
+				recipients.map((recipient) => {
+					return (
+						<span id={recipient.email}>
+							{recipient.name}
+							{' <'}
+							<a
+								aria-label={'mailTo:' + recipient.email}
+								href={'mailTo:' + recipient.email}
+								target="_blank"
+								className="external-link"
+								rel="noopener">
+								{recipient.email}
+							</a>
+							{'>'}
+							{recipients.length > 1 ? '; ' : ''}
+						</span>
+					);
+				})}
 		</>
 	);
 };
 
 const ToggleIndicator = (params: { open: boolean }) => {
 	const { open } = params;
-	return open ? <MdKeyboardArrowDown className="react-icon" /> : <MdKeyboardArrowRight className="react-icon" />;
+	return open ? (
+		<MdKeyboardArrowDown className="msg-handler-react-icon" />
+	) : (
+		<MdKeyboardArrowRight className="msg-handler-react-icon" />
+	);
 };

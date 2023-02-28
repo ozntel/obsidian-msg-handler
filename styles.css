@@ -85,9 +85,14 @@
 	vertical-align: middle !important;
 }
 
-.react-icon {
+.msg-handler-react-icon {
 	vertical-align: middle !important;
 	padding-bottom: 2px;
+}
+
+.msg-handler-react-icon:hover {
+	opacity: 0.6;
+	cursor: pointer;
 }
 
 .workspace-tab-header.is-active[aria-label='MSG Handler Search'] svg {
