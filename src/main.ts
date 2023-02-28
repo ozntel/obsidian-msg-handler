@@ -1,5 +1,12 @@
-import { Plugin, TAbstractFile, TFile, WorkspaceLeaf, addIcon } from 'obsidian';
-import { RENDER_VIEW_TYPE, MsgHandlerView, MsgHandlerSearchView, SEARCH_VIEW_TYPE, ICON } from 'view';
+import { Plugin, TFile, WorkspaceLeaf, addIcon } from 'obsidian';
+import {
+	RENDER_VIEW_TYPE,
+	MsgHandlerView,
+	MsgHandlerSearchView,
+	SEARCH_VIEW_TYPE,
+	ICON,
+	renderMsgFileToElement,
+} from 'view';
 import { getMsgContent } from 'utils';
 import { MSG_HANDLER_ENVELOPE_ICON } from 'icons';
 import { MSGHandlerPluginSettings, MSGHandlerPluginSettingsTab, DEFAULT_SETTINGS } from 'settings';
@@ -71,6 +78,33 @@ export default class MsgHandlerPlugin extends Plugin {
 		this.app.vault.off('delete', this.handleFileDelete);
 		this.app.vault.off('rename', this.handleFileRename);
 	}
+
+	// @API - SHARED WITH OZAN'S IMAGE IN EDITOR - DO NOT CHANGE OR SYNC BEFORE
+	renderMSG = async (msgFile: TFile, targetEl: HTMLElement) => {
+		await renderMsgFileToElement({
+			msgFile: msgFile,
+			targetEl: targetEl,
+			plugin: this,
+		});
+	};
+
+	// @API - SHARED WITH OZAN'S IMAGE IN EDITOR - DO NOT CHANGE OR SYNC BEFORE
+	cleanLoadedBlobs = (params: { all: boolean; forMsgFile?: TFile }) => {
+		const { all, forMsgFile } = params;
+		let blobsToClean: LoadedBlob[] = [];
+		if (all) {
+			blobsToClean = this.loadedBlobs;
+		} else if (forMsgFile) {
+			blobsToClean = this.loadedBlobs.filter((b) => b.originFilePath === forMsgFile.path);
+		}
+		for (let loadedBlob of blobsToClean) {
+			URL.revokeObjectURL(loadedBlob.url);
+			this.loadedBlobs = this.loadedBlobs.filter((b) => b.url !== loadedBlob.url);
+			if (this.settings.logEnabled) {
+				console.log(`Revoked Blob Object ${loadedBlob.url} viewed in ${loadedBlob.originFilePath}`);
+			}
+		}
+	};
 
 	openMsgHandlerSearchLeaf = async (params: { showAfterAttach: boolean }) => {
 		const { showAfterAttach } = params;
