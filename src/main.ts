@@ -80,7 +80,8 @@ export default class MsgHandlerPlugin extends Plugin {
 	}
 
 	// @API - SHARED WITH OZAN'S IMAGE IN EDITOR - DO NOT CHANGE OR SYNC BEFORE
-	renderMSG = async (msgFile: TFile, targetEl: HTMLElement) => {
+	renderMSG = async (params: { msgFile: TFile; targetEl: HTMLElement }) => {
+		const { msgFile, targetEl } = params;
 		await renderMsgFileToElement({
 			msgFile: msgFile,
 			targetEl: targetEl,
