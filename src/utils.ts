@@ -119,7 +119,7 @@ export const openFile = (params: {
 }) => {
 	const { file, plugin, newLeaf, leafBySplit } = params;
 	let leaf = plugin.app.workspace.getLeaf(newLeaf);
-	if (leafBySplit) leaf = plugin.app.workspace.createLeafBySplit(leaf, 'vertical');
+	if (!newLeaf && leafBySplit) leaf = plugin.app.workspace.createLeafBySplit(leaf, 'vertical');
 	plugin.app.workspace.setActiveLeaf(leaf, { focus: true });
 	leaf.openFile(file, { eState: { focus: true } });
 };

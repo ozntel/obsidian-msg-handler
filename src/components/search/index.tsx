@@ -191,10 +191,15 @@ const SearchResultFileMatch = (params: {
 		return plugin.app.vault.getAbstractFileByPath(searchResult.result.obj.filePath);
 	};
 
-	const openFileClicked = () => {
+	const openFileClicked = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		let file = getCurrentAbstractFile();
 		if (file) {
-			openFile({ file: file as TFile, plugin: plugin, newLeaf: false });
+			openFile({
+				file: file as TFile,
+				plugin: plugin,
+				newLeaf: (e.ctrlKey || e.metaKey) && !(e.shiftKey || e.altKey),
+				leafBySplit: (e.ctrlKey || e.metaKey) && (e.shiftKey || e.altKey),
+			});
 		}
 	};
 
