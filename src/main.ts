@@ -15,6 +15,7 @@ import {
 	deleteDBMessageContentById,
 	getDBMessageContentsByPath,
 	syncDatabaseWithVaultFiles,
+	updateFilePathOfAllRecords,
 } from 'database';
 import { LoadedBlob } from 'types';
 
@@ -187,10 +188,7 @@ export default class MsgHandlerPlugin extends Plugin {
 	 * @param oldPath
 	 */
 	handleFileRename = async (file: TFile, oldPath: string) => {
-		let dbMsgContents = await getDBMessageContentsByPath({ filePath: oldPath });
-		if (dbMsgContents.length > 0) {
-			// @TODO Update the content with new path
-			if (this.settings.logEnabled) console.log(`DB Index Record is updated for ${file.path}`);
-		}
+		await updateFilePathOfAllRecords({ oldValue: oldPath, newValue: file.path });
+		if (this.settings.logEnabled) console.log(`DB Index Record is updated for ${file.path}`);
 	};
 }

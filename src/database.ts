@@ -21,6 +21,17 @@ export class MsgHandlerDatabase extends Dexie {
 const pluginDb = new MsgHandlerDatabase();
 
 /**
+ * Update the records with old file path record with new file path record
+ * @param params
+ */
+export const updateFilePathOfAllRecords = async (params: { oldValue: string; newValue: string }) => {
+	const { oldValue, newValue } = params;
+	await pluginDb.dbMessageContents.where('filePath').equals(oldValue).modify({
+		filePath: newValue,
+	});
+};
+
+/**
  * Get all saved/synced message contents from Database
  * @returns Promise<DBCustomMessage[]>
  */
