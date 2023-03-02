@@ -24,11 +24,13 @@ export default function RendererViewComponent(params: { plugin: MsgHandlerPlugin
 			<>
 				<MSGHeaderComponent messageContent={messageContent} />
 				<MSGBodyComponent messageContent={messageContent} />
-				<MSGAttachmentsComponent
-					messageAttachments={messageContent.attachments}
-					fileToRender={fileToRender}
-					plugin={plugin}
-				/>
+				{messageContent.attachments.length > 0 && (
+					<MSGAttachmentsComponent
+						messageAttachments={messageContent.attachments}
+						fileToRender={fileToRender}
+						plugin={plugin}
+					/>
+				)}
 			</>
 		)
 	);
