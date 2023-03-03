@@ -40,10 +40,17 @@ export const getMsgContent = async (params: {
 			recipients: parseEMLRecipients({ readEmlJson: readedEmlJson }),
 			creationTime: dayjs(readedEmlJson.date).format('ddd, D MMM YYYY HH:mm:ss'),
 			subject: dataOrEmpty(readedEmlJson.subject),
-			body: dataOrEmpty(readedEmlJson.text.replace(/\r\n\r\n/g, '\r\n\r\n \r\n\r\n')),
+			body: cleanEMLBody({ text: readedEmlJson.text }),
 			attachments: extractEMLAttachments({ emlFileReadJson: readedEmlJson }),
 		};
 	}
+};
+
+const cleanEMLBody = (params: { text: string }) => {
+	if (!params.text) return '';
+	let cleanTxt = params.text.replace(/\r\n\r\n/g, '\r\n\r\n \r\n\r\n');
+	const pattern = /\[cid:.*?\]/g;
+	return cleanTxt.replace(pattern, '');
 };
 
 /**
