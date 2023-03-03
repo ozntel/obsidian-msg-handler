@@ -1,6 +1,6 @@
 {
 	"name": "msg-handler",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "This plugin is created to display and easily search for msg files from Outlook",
 	"main": "main.js",
 	"scripts": {

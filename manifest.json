@@ -1,7 +1,7 @@
 {
 	"id": "msg-handler",
 	"name": "MSG Handler",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"minAppVersion": "0.15.0",
 	"description": "Easily display and search MSG files from Outlook in your Obsidian Vault",
 	"author": "Ozan Tellioglu",
