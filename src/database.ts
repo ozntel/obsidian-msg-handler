@@ -84,7 +84,7 @@ export const deleteDBMessageContentById = async (params: { id: number | undefine
 export const syncDatabaseWithVaultFiles = async (params: { plugin: MsgHandlerPlugin }) => {
 	const { plugin } = params;
 
-	let msgFiles = plugin.app.vault.getFiles().filter((f) => f.extension === 'msg');
+	let msgFiles = plugin.app.vault.getFiles().filter((f) => plugin.acceptedExtensions.contains(f.extension));
 	let dbMsgContents = await getAllDBMessageContents();
 
 	// Loop db message contents to see if they exist in the vault

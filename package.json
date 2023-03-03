@@ -28,7 +28,9 @@
 	"dependencies": {
 		"@kenjiuno/msgreader": "^1.19.0-alpha.1",
 		"common-tags": "^1.8.2",
+		"dayjs": "^1.11.7",
 		"dexie": "^3.2.3",
+		"eml-parse-js": "^1.1.8",
 		"fuzzysort": "^2.0.4",
 		"preact": "^10",
 		"prettier": "^2.8.4",

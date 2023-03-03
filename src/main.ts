@@ -20,6 +20,7 @@ import {
 import { LoadedBlob } from 'types';
 
 export default class MsgHandlerPlugin extends Plugin {
+	acceptedExtensions: string[] = ['msg', 'eml'];
 	settings: MSGHandlerPluginSettings;
 	ribbonIconEl: HTMLElement | undefined = undefined;
 	loadedBlobs: LoadedBlob[] = [];
@@ -132,7 +133,7 @@ export default class MsgHandlerPlugin extends Plugin {
 
 	registerMsgExtensionView = () => {
 		try {
-			this.registerExtensions(['msg'], RENDER_VIEW_TYPE);
+			this.registerExtensions(this.acceptedExtensions, RENDER_VIEW_TYPE);
 		} catch (err) {
 			if (this.settings.logEnabled) console.log('Msg file extension renderer was already registered');
 		}
@@ -153,7 +154,7 @@ export default class MsgHandlerPlugin extends Plugin {
 	 * @param file
 	 */
 	handleFileCreate = async (file: TFile) => {
-		if (file.path.endsWith('msg')) {
+		if (this.acceptedExtensions.contains(file.extension)) {
 			let dbMsgContents = await getDBMessageContentsByPath({ filePath: file.path });
 			if (dbMsgContents.length === 0) {
 				let msgContent = await getMsgContent({ plugin: this, msgFile: file });
@@ -171,7 +172,7 @@ export default class MsgHandlerPlugin extends Plugin {
 	 * @param file
 	 */
 	handleFileDelete = async (file: TFile) => {
-		if (file.path.endsWith('msg')) {
+		if (this.acceptedExtensions.contains(file.extension)) {
 			let dbMsgContents = await getDBMessageContentsByPath({ filePath: file.path });
 			if (dbMsgContents.length > 0) {
 				for (let dbMsgContent of dbMsgContents) {
