@@ -34,7 +34,6 @@ export const getMsgContent = async (params: {
 	} else if (msgFile.extension === 'eml') {
 		let readedEmlJson = await readEmlFile({ emlFile: msgFile, plugin: plugin });
 		let sender = parseEmlSender({ senderText: readedEmlJson.headers.From });
-		console.log(readedEmlJson);
 		return {
 			senderName: sender.senderName,
 			senderEmail: sender.senderEmail,
@@ -147,7 +146,7 @@ const extractEMLAttachments = (params: { emlFileReadJson: ReadedEmlJson }): MSGA
 			attachments.push({
 				fileName: attachment.name,
 				fileExtension: '.' + extension,
-				fileArray: attachment.data as Uint8Array,
+				fileArray: attachment.data64,
 			});
 		}
 		return attachments;
@@ -254,4 +253,19 @@ export const openFileInNewTabGroup = (params: { plugin: MsgHandlerPlugin; file: 
  */
 export function isMouseEvent(e: React.TouchEvent | React.MouseEvent): e is React.MouseEvent {
 	return e && 'screenX' in e;
+}
+
+/**
+ * Convert base64 string to Uint8Array
+ * @param base64
+ * @returns
+ */
+export function base64ToArrayBuffer(base64: string): Uint8Array {
+	var binary_string = window.atob(base64);
+	var len = binary_string.length;
+	var bytes = new Uint8Array(len);
+	for (var i = 0; i < len; i++) {
+		bytes[i] = binary_string.charCodeAt(i);
+	}
+	return bytes;
 }

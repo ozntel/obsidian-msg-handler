@@ -1,13 +1,17 @@
 import { FuzzySuggestModal, TFolder, App } from 'obsidian';
+import { base64ToArrayBuffer } from './utils';
 
 export class FolderToSaveSuggestionModal extends FuzzySuggestModal<TFolder> {
 	app: App;
 	fileName: string;
 	fileToSave: Uint8Array;
 
-	constructor(app: App, fileToSave: Uint8Array, fileName: string) {
+	constructor(app: App, fileToSave: Uint8Array | string, fileName: string) {
 		super(app);
 		this.fileName = fileName;
+		if (typeof fileToSave === 'string') {
+			fileToSave = base64ToArrayBuffer(fileToSave);
+		}
 		this.fileToSave = fileToSave;
 	}
 
@@ -20,7 +24,7 @@ export class FolderToSaveSuggestionModal extends FuzzySuggestModal<TFolder> {
 	}
 
 	onChooseItem(item: TFolder, evt: MouseEvent | KeyboardEvent) {
-		this.app.vault.adapter.writeBinary(item.path + '/' + this.fileName, this.fileToSave);
+		this.app.vault.createBinary(item.path + '/' + this.fileName, this.fileToSave);
 	}
 }
 

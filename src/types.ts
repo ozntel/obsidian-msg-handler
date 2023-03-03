@@ -22,7 +22,7 @@ export interface MSGRecipient {
 export interface MSGAttachment {
 	fileName: string;
 	fileExtension: string;
-	fileArray: Uint8Array;
+	fileArray: Uint8Array | string;
 }
 
 // --> This type is created to store indexed data within the database

@@ -16,7 +16,6 @@ export default function RendererViewComponent(params: { plugin: MsgHandlerPlugin
 	useEffect(() => {
 		getMsgContent({ plugin: plugin, msgFile: fileToRender }).then((msgContent) => {
 			setMessageContent(msgContent);
-			console.log(msgContent);
 		});
 	}, []);
 
@@ -133,15 +132,19 @@ const MSGSingleAttachmentComponent = (params: {
 	const [open, setOpen] = useState<boolean>(false);
 	const toggleOpen = () => setOpen(!open);
 
-	const blobToURL = (fileArray: Uint8Array) => {
-		const blob = new Blob([fileArray]);
-		const url = URL.createObjectURL(blob);
-		// Push into loadedBlobs so that can be unloaded during file onClose (in renderer/index.tsx)
-		plugin.loadedBlobs.push({
-			url: url,
-			originFilePath: fileToRender.path,
-		});
-		return url;
+	const getFileUrl = (fileArray: Uint8Array | string) => {
+		if (typeof fileArray === 'string') {
+			return `data:image/jpeg;base64,${fileArray}`;
+		} else {
+			const blob = new Blob([fileArray]);
+			const url = URL.createObjectURL(blob);
+			// Push into loadedBlobs so that can be unloaded during file onClose (in renderer/index.tsx)
+			plugin.loadedBlobs.push({
+				url: url,
+				originFilePath: fileToRender.path,
+			});
+			return url;
+		}
 	};
 
 	const saveFileToVault = () => {
@@ -169,7 +172,7 @@ const MSGSingleAttachmentComponent = (params: {
 			{open && (
 				<div className="oz-msg-attachment-display">
 					{imgExtensions.includes(messageAttachment.fileExtension) && (
-						<img src={blobToURL(messageAttachment.fileArray)} />
+						<img src={getFileUrl(messageAttachment.fileArray)} />
 					)}
 				</div>
 			)}
