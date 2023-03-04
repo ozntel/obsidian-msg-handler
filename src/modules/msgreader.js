@@ -12,8 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- MSG Reader
+
+/**
+ * This MSG Reader is created by Yury Karpovich
+ * Under Github Repository https://github.com/ykarpovich/msg.reader
  */
 
 /**
