@@ -26,7 +26,6 @@
 		"typescript": "4.7.4"
 	},
 	"dependencies": {
-		"@kenjiuno/msgreader": "^1.19.0-alpha.1",
 		"common-tags": "^1.8.2",
 		"dayjs": "^1.11.7",
 		"dexie": "^3.2.3",

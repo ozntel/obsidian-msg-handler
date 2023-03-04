@@ -43,3 +43,38 @@ export interface LoadedBlob {
 	originFilePath: string;
 	url: string;
 }
+
+/* --- External Library Helper Interface --- */
+
+export interface Ext_MSGReader_FileData {
+	senderName: string;
+	senderEmail: string;
+	recipients: Ext_MSGReader_Recipient[];
+	subject: string;
+	body: string;
+	attachments: Ext_MSGReader_Attachment[];
+	// Not used
+	headers: string;
+	bodyHTML: string;
+}
+
+export interface Ext_MSGReader_Recipient {
+	name: string;
+	email: string;
+}
+
+export interface Ext_MSGReader_Attachment {
+	contentLenght: number;
+	dataId: number;
+	extension: string;
+	fileName: string;
+	fileNameShort: string;
+	mimeType: string;
+	name: string;
+	pidContentId: string;
+}
+
+export interface Ext_MSGReader_AttachmentData {
+	fileName: string;
+	content: Uint8Array;
+}

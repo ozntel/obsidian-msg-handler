@@ -1,9 +1,17 @@
-import MsgReader, { FieldsData } from '@kenjiuno/msgreader';
+import { MSGReader } from './modules/msgreader.js';
 import MsgHandlerPlugin from 'main';
 import { MarkdownRenderer, Component, TFile } from 'obsidian';
-import { MSGRenderData, MSGRecipient, MSGAttachment } from 'types';
 import { readEml, ReadedEmlJson } from 'eml-parse-js';
 import dayjs from 'dayjs';
+import {
+	MSGRenderData,
+	MSGRecipient,
+	MSGAttachment,
+	Ext_MSGReader_FileData,
+	Ext_MSGReader_Attachment,
+	Ext_MSGReader_AttachmentData,
+	Ext_MSGReader_Recipient,
+} from 'types';
 
 /**
  * This function is to get the MSGRenderData for provided Outlook MSG file under the path provided
@@ -17,14 +25,18 @@ export const getMsgContent = async (params: {
 	const { plugin, msgFile } = params;
 	if (msgFile.extension === 'msg') {
 		let msgFileBuffer = await plugin.app.vault.readBinary(params.msgFile);
-		let msgReader = new MsgReader(msgFileBuffer);
-		let fileData = msgReader.getFileData();
+		let msgReader = new MSGReader(msgFileBuffer);
+		let fileData = msgReader.getFileData() as Ext_MSGReader_FileData;
+		let creationTime = getMsgDate({ rawHeaders: fileData.headers });
 		return {
 			senderName: dataOrEmpty(fileData.senderName),
-			senderEmail: dataOrEmpty(fileData.senderSmtpAddress),
+			senderEmail: dataOrEmpty(fileData.senderEmail),
 			recipients: getCustomRecipients(fileData.recipients ? fileData.recipients : []),
-			creationTime: dataOrEmpty(fileData.creationTime),
-			subject: dataOrEmpty(fileData.normalizedSubject),
+			creationTime:
+				typeof creationTime === 'string'
+					? creationTime
+					: dayjs(creationTime).format('ddd, D MMM YYYY HH:mm:ss'),
+			subject: dataOrEmpty(fileData.subject),
 			body: dataOrEmpty(fileData.body),
 			attachments: extractMSGAttachments({
 				msgReader: msgReader,
@@ -46,6 +58,45 @@ export const getMsgContent = async (params: {
 	}
 };
 
+/**
+ * Creates Header Dictionary coming from Msg Headers String
+ * @param params
+ * @returns { [key: string]: string }
+ */
+function parseHeaders(params: { headers: string }): { [key: string]: string } {
+	const { headers } = params;
+	var parsedHeaders: { [key: string]: string } = {};
+	if (!headers) return parsedHeaders;
+	var headerRegEx = /(.*)\: (.*)/g;
+	let m;
+	while ((m = headerRegEx.exec(headers))) {
+		// todo: Pay attention! Header can be presented many times (e.g. Received).
+		// Handle it, if needed!
+		parsedHeaders[m[1]] = m[2];
+	}
+	return parsedHeaders;
+}
+
+/**
+ * From raw msg headers string, it will extract the creation time
+ * @param params
+ * @returns
+ */
+function getMsgDate(params: { rawHeaders: string }): string | Date {
+	const { rawHeaders } = params;
+	// Example for the Date header
+	var headers = parseHeaders({ headers: rawHeaders });
+	if (!headers['Date']) {
+		return '-';
+	}
+	return new Date(headers['Date']);
+}
+
+/**
+ * Function to clean the EML Body Text
+ * @param params
+ * @returns
+ */
 const cleanEMLBody = (params: { text: string }) => {
 	if (!params.text) return '';
 	let cleanTxt = params.text.replace(/\r\n\r\n/g, '\r\n\r\n \r\n\r\n');
@@ -121,13 +172,13 @@ const parseEMLRecipients = (params: { readEmlJson: ReadedEmlJson }): MSGRecipien
  * @returns
  */
 const extractMSGAttachments = (params: {
-	msgReader: MsgReader;
-	fileDataAttachments: FieldsData[];
+	msgReader: MSGReader;
+	fileDataAttachments: Ext_MSGReader_Attachment[];
 }): MSGAttachment[] => {
 	const { msgReader, fileDataAttachments } = params;
 	let msgAttachments: MSGAttachment[] = [];
 	for (let [index, fileDataAttachment] of fileDataAttachments.entries()) {
-		let attRead = msgReader.getAttachment(index);
+		let attRead = msgReader.getAttachment(index) as Ext_MSGReader_AttachmentData;
 		msgAttachments.push({
 			fileName: attRead.fileName,
 			fileExtension: fileDataAttachment.extension,
@@ -167,13 +218,13 @@ const extractEMLAttachments = (params: { emlFileReadJson: ReadedEmlJson }): MSGA
  * @param recipients
  * @returns
  */
-const getCustomRecipients = (recipients: FieldsData[]): MSGRecipient[] => {
+const getCustomRecipients = (recipients: Ext_MSGReader_Recipient[]): MSGRecipient[] => {
 	if (recipients && recipients.length > 0) {
 		let customRecipients = [];
 		for (let recipient of recipients) {
 			customRecipients.push({
 				name: dataOrEmpty(recipient.name),
-				email: dataOrEmpty(recipient.smtpAddress),
+				email: dataOrEmpty(recipient.email),
 			});
 		}
 		return customRecipients;
