@@ -53,23 +53,21 @@ export default class MsgHandlerPlugin extends Plugin {
 		});
 
 		// --> Preview Render
-		this.registerMarkdownPostProcessor((el) => {
+		this.registerMarkdownPostProcessor((el, ctx) => {
 			let msgElement =
 				el.querySelector('.internal-embed[src$=".eml"]') ||
 				el.querySelector('.internal-embed[src$=".msg"]');
 			if (msgElement) {
 				let src = msgElement.getAttribute('src');
 				if (src) {
-					let msgFile = this.app.vault.getAbstractFileByPath(src);
+					let msgFile = this.app.metadataCache.getFirstLinkpathDest(src, ctx.sourcePath);
 					if (msgFile) {
 						// Remove the default msg render from preview
 						let parentMsgElement = msgElement.parentElement;
 						msgElement.remove();
 						// Create new div to render msg
-						let wrapperDiv = document.createElement('div');
+						let wrapperDiv = parentMsgElement.createEl('div');
 						wrapperDiv.addClass('oz-msg-handler-preview-render');
-						// Append to the preview line
-						parentMsgElement.appendChild(wrapperDiv);
 						// Render to the new div
 						this.renderMSG({
 							msgFile: msgFile as TFile,
