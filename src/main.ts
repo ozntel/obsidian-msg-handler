@@ -17,13 +17,11 @@ import {
 	syncDatabaseWithVaultFiles,
 	updateFilePathOfAllRecords,
 } from 'database';
-import { LoadedBlob } from 'types';
 
 export default class MsgHandlerPlugin extends Plugin {
 	acceptedExtensions: string[] = ['msg', 'eml'];
 	settings: MSGHandlerPluginSettings;
 	ribbonIconEl: HTMLElement | undefined = undefined;
-	loadedBlobs: LoadedBlob[] = [];
 
 	async onload() {
 		// --> Add Icons
@@ -121,20 +119,7 @@ export default class MsgHandlerPlugin extends Plugin {
 
 	// @API - SHARED WITH OZAN'S IMAGE IN EDITOR - DO NOT CHANGE OR SYNC BEFORE
 	cleanLoadedBlobs = (params: { all: boolean; forMsgFile?: TFile }) => {
-		const { all, forMsgFile } = params;
-		let blobsToClean: LoadedBlob[] = [];
-		if (all) {
-			blobsToClean = this.loadedBlobs;
-		} else if (forMsgFile) {
-			blobsToClean = this.loadedBlobs.filter((b) => b.originFilePath === forMsgFile.path);
-		}
-		for (let loadedBlob of blobsToClean) {
-			URL.revokeObjectURL(loadedBlob.url);
-			this.loadedBlobs = this.loadedBlobs.filter((b) => b.url !== loadedBlob.url);
-			if (this.settings.logEnabled) {
-				console.log(`Revoked Blob Object ${loadedBlob.url} viewed in ${loadedBlob.originFilePath}`);
-			}
-		}
+		/* Deprecated - Blobs are not created anymore */
 	};
 
 	openMsgHandlerSearchLeaf = async (params: { showAfterAttach: boolean }) => {

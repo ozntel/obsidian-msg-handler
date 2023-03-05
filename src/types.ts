@@ -22,7 +22,7 @@ export interface MSGRecipient {
 export interface MSGAttachment {
 	fileName: string;
 	fileExtension: string;
-	fileArray: Uint8Array | string;
+	fileBase64: string;
 }
 
 // --> This type is created to store indexed data within the database
@@ -37,11 +37,6 @@ export interface MSGDataIndexed extends MSGBaseData {
 // eligible string
 export interface MSGDataIndexedSearchEligible extends Omit<MSGDataIndexed, 'recipients'> {
 	recipients: string;
-}
-
-export interface LoadedBlob {
-	originFilePath: string;
-	url: string;
 }
 
 /* --- External Library Helper Interface --- */

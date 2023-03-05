@@ -25,11 +25,7 @@ export default function RendererViewComponent(params: { plugin: MsgHandlerPlugin
 				<MSGHeaderComponent messageContent={messageContent} />
 				<MSGBodyComponent messageContent={messageContent} />
 				{messageContent.attachments.length > 0 && (
-					<MSGAttachmentsComponent
-						messageAttachments={messageContent.attachments}
-						fileToRender={fileToRender}
-						plugin={plugin}
-					/>
+					<MSGAttachmentsComponent messageAttachments={messageContent.attachments} plugin={plugin} />
 				)}
 			</>
 		)
@@ -91,12 +87,8 @@ const MSGBodyComponent = (params: { messageContent: MSGRenderData }) => {
 	);
 };
 
-const MSGAttachmentsComponent = (params: {
-	fileToRender: TFile;
-	messageAttachments: MSGAttachment[];
-	plugin: MsgHandlerPlugin;
-}) => {
-	const { fileToRender, messageAttachments, plugin } = params;
+const MSGAttachmentsComponent = (params: { messageAttachments: MSGAttachment[]; plugin: MsgHandlerPlugin }) => {
+	const { messageAttachments, plugin } = params;
 	const [open, setOpen] = useState<boolean>(true);
 	const toggleOpen = () => setOpen(!open);
 	return (
@@ -111,7 +103,6 @@ const MSGAttachmentsComponent = (params: {
 						return (
 							<MSGSingleAttachmentComponent
 								key={attachment.fileName}
-								fileToRender={fileToRender}
 								messageAttachment={attachment}
 								plugin={plugin}
 							/>
@@ -123,34 +114,15 @@ const MSGAttachmentsComponent = (params: {
 	);
 };
 
-const MSGSingleAttachmentComponent = (params: {
-	fileToRender: TFile;
-	messageAttachment: MSGAttachment;
-	plugin: MsgHandlerPlugin;
-}) => {
-	const { fileToRender, messageAttachment, plugin } = params;
+const MSGSingleAttachmentComponent = (params: { messageAttachment: MSGAttachment; plugin: MsgHandlerPlugin }) => {
+	const { messageAttachment, plugin } = params;
 	const [open, setOpen] = useState<boolean>(false);
 	const toggleOpen = () => setOpen(!open);
-
-	const getFileUrl = (fileArray: Uint8Array | string) => {
-		if (typeof fileArray === 'string') {
-			return `data:image/jpeg;base64,${fileArray}`;
-		} else {
-			const blob = new Blob([fileArray]);
-			const url = URL.createObjectURL(blob);
-			// Push into loadedBlobs so that can be unloaded during file onClose (in renderer/index.tsx)
-			plugin.loadedBlobs.push({
-				url: url,
-				originFilePath: fileToRender.path,
-			});
-			return url;
-		}
-	};
 
 	const saveFileToVault = () => {
 		let modal = new FolderToSaveSuggestionModal(
 			plugin.app,
-			messageAttachment.fileArray,
+			messageAttachment.fileBase64,
 			messageAttachment.fileName
 		);
 		modal.open();
@@ -172,7 +144,7 @@ const MSGSingleAttachmentComponent = (params: {
 			{open && (
 				<div className="oz-msg-attachment-display">
 					{imgExtensions.includes(messageAttachment.fileExtension) && (
-						<img src={getFileUrl(messageAttachment.fileArray)} />
+						<img src={`data:image/jpeg;base64,${messageAttachment.fileBase64}`} />
 					)}
 				</div>
 			)}

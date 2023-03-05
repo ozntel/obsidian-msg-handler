@@ -3,6 +3,7 @@ import MsgHandlerPlugin from 'main';
 import { MarkdownRenderer, Component, TFile } from 'obsidian';
 import { readEml, ReadedEmlJson } from 'eml-parse-js';
 import dayjs from 'dayjs';
+import { Base64 } from 'js-base64';
 import {
 	MSGRenderData,
 	MSGRecipient,
@@ -182,7 +183,7 @@ const extractMSGAttachments = (params: {
 		msgAttachments.push({
 			fileName: attRead.fileName,
 			fileExtension: fileDataAttachment.extension,
-			fileArray: attRead.content,
+			fileBase64: attRead.content ? uint8ArrayToBase64(attRead.content) : null,
 		});
 	}
 	return msgAttachments;
@@ -204,7 +205,7 @@ const extractEMLAttachments = (params: { emlFileReadJson: ReadedEmlJson }): MSGA
 			attachments.push({
 				fileName: attachment.name,
 				fileExtension: '.' + extension,
-				fileArray: attachment.data64,
+				fileBase64: attachment.data64,
 			});
 		}
 		return attachments;
@@ -326,4 +327,13 @@ export function base64ToArrayBuffer(base64: string): Uint8Array {
 		bytes[i] = binary_string.charCodeAt(i);
 	}
 	return bytes;
+}
+
+/**
+ * Converts uint8Array to Base64 String
+ * @param uint8Array
+ * @returns
+ */
+export function uint8ArrayToBase64(uint8Array: Uint8Array): string {
+	return Base64.fromUint8Array(uint8Array);
 }

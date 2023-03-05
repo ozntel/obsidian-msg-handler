@@ -31,6 +31,7 @@
 		"dexie": "^3.2.3",
 		"eml-parse-js": "^1.1.8",
 		"fuzzysort": "^2.0.4",
+		"js-base64": "^3.7.5",
 		"preact": "^10",
 		"prettier": "^2.8.4",
 		"react": "npm:@preact/compat@17.0.2",
