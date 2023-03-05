@@ -54,6 +54,34 @@ export default class MsgHandlerPlugin extends Plugin {
 			this.openMsgHandlerSearchLeaf({ showAfterAttach: false });
 		});
 
+		// --> Preview Render
+		this.registerMarkdownPostProcessor((el) => {
+			let msgElement =
+				el.querySelector('.internal-embed[src$=".eml"]') ||
+				el.querySelector('.internal-embed[src$=".msg"]');
+			if (msgElement) {
+				let src = msgElement.getAttribute('src');
+				if (src) {
+					let msgFile = this.app.vault.getAbstractFileByPath(src);
+					if (msgFile) {
+						// Remove the default msg render from preview
+						let parentMsgElement = msgElement.parentElement;
+						msgElement.remove();
+						// Create new div to render msg
+						let wrapperDiv = document.createElement('div');
+						wrapperDiv.addClass('oz-msg-handler-preview-render');
+						// Append to the preview line
+						parentMsgElement.appendChild(wrapperDiv);
+						// Render to the new div
+						this.renderMSG({
+							msgFile: msgFile as TFile,
+							targetEl: wrapperDiv,
+						});
+					}
+				}
+			}
+		});
+
 		// --> Add Commands
 		this.addCommand({
 			id: 'reveal-msg-handler-search-leaf',

@@ -133,3 +133,10 @@
 .oz-msg-handler-tip-div img {
 	border-radius: 10px;
 }
+
+.oz-msg-handler-preview-render {
+	max-height: 400px;
+	overflow: scroll;
+	border-left: var(--embed-border-left);
+	padding: var(--embed-padding);
+}
