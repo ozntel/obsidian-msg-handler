@@ -18,12 +18,16 @@ In the plugin msg file view, you will have 3 sections:
 
 You can install **Ozan's Image in Editor** plugin to view the embedded preview of your `.msg` or `.eml` files directly from the editor using WikiLinks:
 
-```text
+```md
 ![[MyMessageFromOutlook.msg]]
 ![[AnotherMessageToSee.eml]]
 ```
 
 Make sure that you enable rendering msg files from the **Ozan's Image in Editor** plugin settings.
+
+## View Messages in Preview Mode
+
+The plugin by default supports the preview of embedded images in Obsidian's Preview Mode. If you are using Editor Source Mode combined with Preview mode, your embedded messages are always going to be displayed along with your markdown note. Same like Editor Source Mode, use the Wikilink format.
 
 ## Contact
 
